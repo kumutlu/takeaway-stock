@@ -7,7 +7,6 @@ const navItems: { href: Route; label: string; icon: typeof LayoutGrid }[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
   { href: "/products", label: "Products", icon: Package },
   { href: "/order-needs", label: "Order Needs", icon: ClipboardList },
-  { href: "/stock-updates", label: "Stock Updates", icon: ClipboardList },
   { href: "/orders", label: "Orders", icon: Layers },
   { href: "/settings", label: "Settings", icon: Settings }
 ];
