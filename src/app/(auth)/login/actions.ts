@@ -43,10 +43,10 @@ export async function sendMagicLink(formData: FormData) {
   });
 
   if (error) {
-    return { ok: false, message: error.message };
+    return;
   }
 
-  return { ok: true, message: "Magic link gonderildi." };
+  return;
 }
 
 export async function signInWithGoogle(formData: FormData) {
