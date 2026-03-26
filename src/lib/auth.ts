@@ -6,12 +6,12 @@ export async function requireUser() {
   const supabase = createSupabaseServerClient();
   const { data } = await supabase.auth.getUser();
   if (!data.user) {
-    redirect("/login");
+    redirect("/sign-in");
   }
 
   const email = data.user.email ?? "";
   if (!email) {
-    redirect("/login");
+    redirect("/sign-in");
   }
 
   const user = await prisma.user.upsert({
@@ -26,7 +26,7 @@ export async function requireUser() {
   });
 
   if (!user.isActive) {
-    redirect("/login");
+    redirect("/sign-in");
   }
 
   return { authUser: data.user, appUser: user };

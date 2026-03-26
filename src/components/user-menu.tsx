@@ -9,7 +9,7 @@ export default function UserMenu() {
   async function signOut() {
     const supabase = createSupabaseBrowserClient();
     await supabase.auth.signOut();
-    window.location.href = "/login";
+    window.location.href = "/sign-in";
   }
 
   return (

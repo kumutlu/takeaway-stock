@@ -6,7 +6,7 @@ export async function GET() {
   const supabase = createSupabaseServerClient();
   const { data } = await supabase.auth.getUser();
   if (!data.user) {
-    return NextResponse.redirect(new URL("/login", process.env.NEXT_PUBLIC_SITE_URL));
+    return NextResponse.redirect(new URL("/sign-in", process.env.NEXT_PUBLIC_SITE_URL));
   }
 
   const suggestions = await getOrderSuggestions(getTodayWeekday());

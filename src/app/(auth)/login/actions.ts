@@ -12,7 +12,7 @@ export async function signInWithPassword(formData: FormData) {
   const { error, data } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    redirect(`/login?error=${encodeURIComponent("Invalid email or password")}`);
+    redirect(`/sign-in?error=${encodeURIComponent("Invalid email or password")}`);
   }
 
   if (data.user?.email) {
@@ -35,29 +35,16 @@ export async function signInWithPassword(formData: FormData) {
 export async function signUpWithPassword(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
+  const confirm = String(formData.get("confirm") ?? "");
+  if (!password || password !== confirm) {
+    redirect(`/sign-up?error=${encodeURIComponent("Passwords do not match")}`);
+  }
   const supabase = createSupabaseServerClient();
   const { error } = await supabase.auth.signUp({ email, password });
   if (error) {
-    redirect(`/login?error=${encodeURIComponent(error.message)}`);
+    redirect(`/sign-up?error=${encodeURIComponent(error.message)}`);
   }
-  redirect(`/login?message=${encodeURIComponent("Check your email to confirm your account.")}`);
-}
-
-export async function sendMagicLink(formData: FormData) {
-  const email = String(formData.get("email") ?? "");
-  const supabase = createSupabaseServerClient();
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/auth/callback`
-    }
-  });
-
-  if (error) {
-    redirect(`/login?error=${encodeURIComponent(error.message)}`);
-  }
-
-  redirect(`/login?message=${encodeURIComponent("Magic link sent. Check your email.")}`);
+  redirect(`/sign-in?message=${encodeURIComponent("Check your email to confirm your account.")}`);
 }
 
 export async function sendPasswordReset(formData: FormData) {
@@ -67,9 +54,9 @@ export async function sendPasswordReset(formData: FormData) {
     redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/auth/callback`
   });
   if (error) {
-    redirect(`/login?error=${encodeURIComponent(error.message)}`);
+    redirect(`/forgot-password?error=${encodeURIComponent(error.message)}`);
   }
-  redirect(`/login?message=${encodeURIComponent("Password reset email sent.")}`);
+  redirect(`/forgot-password?message=${encodeURIComponent("Password reset email sent.")}`);
 }
 
 export async function signInWithGoogle(formData: FormData) {
@@ -83,7 +70,7 @@ export async function signInWithGoogle(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/login?error=${encodeURIComponent(error.message)}`);
+    redirect(`/sign-in?error=${encodeURIComponent(error.message)}`);
   }
 
   if (data.url) {
