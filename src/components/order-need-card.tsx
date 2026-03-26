@@ -130,13 +130,10 @@ export default function OrderNeedCard({
           aria-label="Reset quantity"
           className="flex h-11 w-11 items-center justify-center rounded-full border border-ink-200 bg-white/80 text-ink-500 transition hover:border-ink-300 hover:text-ink-700"
           disabled={isPending}
-          onClick={() =>
-            startTransition(() => {
-              setLocalQty(0);
-              latestQty.current = 0;
-              return removeOrderNeed(buildFormData(product.id));
-            })
-          }
+          onClick={() => {
+            setLocalQty(0);
+            scheduleFlush(0);
+          }}
         >
           <Trash2 size={14} />
         </button>
