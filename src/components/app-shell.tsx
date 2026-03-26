@@ -1,8 +1,9 @@
+import type { Route } from "next";
 import Link from "next/link";
 import { Package, LayoutGrid, ClipboardList, Users, Settings, Layers } from "lucide-react";
 import UserMenu from "@/components/user-menu";
 
-const navItems = [
+const navItems: { href: Route; label: string; icon: typeof LayoutGrid }[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
   { href: "/products", label: "Products", icon: Package },
   { href: "/order-needs", label: "Order Needs", icon: ClipboardList },
