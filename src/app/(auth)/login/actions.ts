@@ -60,7 +60,7 @@ export async function signInWithGoogle(formData: FormData) {
   });
 
   if (error) {
-    return { ok: false, message: error.message };
+    return;
   }
 
   if (data.url) {
