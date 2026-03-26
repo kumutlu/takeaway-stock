@@ -1,6 +1,6 @@
 import type { Route } from "next";
 import Link from "next/link";
-import { Package, LayoutGrid, ClipboardList, Users, Settings, Layers } from "lucide-react";
+import { Package, LayoutGrid, ClipboardList, Settings, Layers } from "lucide-react";
 import UserMenu from "@/components/user-menu";
 
 const navItems: { href: Route; label: string; icon: typeof LayoutGrid }[] = [
@@ -9,7 +9,6 @@ const navItems: { href: Route; label: string; icon: typeof LayoutGrid }[] = [
   { href: "/order-needs", label: "Order Needs", icon: ClipboardList },
   { href: "/stock-updates", label: "Stock Updates", icon: ClipboardList },
   { href: "/orders", label: "Orders", icon: Layers },
-  { href: "/users", label: "Users", icon: Users },
   { href: "/settings", label: "Settings", icon: Settings }
 ];
 
@@ -43,9 +42,6 @@ export default function AppShell({
               </Link>
             ))}
           </nav>
-          <div className="mt-auto rounded-2xl border border-ink-100 bg-white/80 p-4 text-xs text-ink-600 shadow-ring">
-            Optimized for a 4-person team.
-          </div>
         </aside>
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="border-b border-ink-100 bg-white/80 px-4 py-4 backdrop-blur-xl md:px-6">

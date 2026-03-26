@@ -12,7 +12,8 @@ export default function SignInPage({
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-10">
       <div className="w-full max-w-md rounded-3xl border border-ink-100 bg-white/95 p-8 shadow-card">
-        <h1 className="text-3xl font-semibold text-ink-900">Sign in</h1>
+        <p className="text-xs uppercase tracking-[0.3em] text-ink-400">Wrap'n Bowl</p>
+        <h1 className="mt-2 text-3xl font-semibold text-ink-900">Sign in</h1>
         <p className="mt-2 text-sm text-ink-500">Welcome back. Use your email and password.</p>
 
         {error && (
