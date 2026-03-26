@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { signInWithPassword, signInWithGoogle } from "../login/actions";
+import SignInForm from "@/components/sign-in-form";
 
 export default function SignInPage({
   searchParams
@@ -27,27 +28,7 @@ export default function SignInPage({
           </div>
         )}
 
-        <form action={signInWithPassword} className="mt-6 space-y-4">
-          <input
-            className="w-full rounded-xl border border-ink-200 bg-white/90 px-4 py-3 text-sm shadow-ring"
-            placeholder="Email"
-            type="email"
-            name="email"
-            required
-            autoComplete="email"
-          />
-          <input
-            className="w-full rounded-xl border border-ink-200 bg-white/90 px-4 py-3 text-sm shadow-ring"
-            placeholder="Password"
-            type="password"
-            name="password"
-            required
-            autoComplete="current-password"
-          />
-          <button className="w-full rounded-full bg-ink-900 px-4 py-3 text-sm font-semibold text-white shadow-soft">
-            Sign in
-          </button>
-        </form>
+        <SignInForm action={signInWithPassword} />
 
         <div className="mt-3 flex items-center justify-between text-xs text-ink-500">
           <Link className="hover:text-ink-700" href="/forgot-password">
