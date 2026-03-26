@@ -1,6 +1,6 @@
 import type { Route } from "next";
 import Link from "next/link";
-import { Package, LayoutGrid, ClipboardList, Settings, Layers } from "lucide-react";
+import { Package, LayoutGrid, ClipboardList, Layers } from "lucide-react";
 import UserMenu from "@/components/user-menu";
 
 const navItems: { href: Route; label: string; icon: typeof LayoutGrid }[] = [
@@ -8,7 +8,6 @@ const navItems: { href: Route; label: string; icon: typeof LayoutGrid }[] = [
   { href: "/products", label: "Products", icon: Package },
   { href: "/order-needs", label: "Order Needs", icon: ClipboardList },
   { href: "/orders", label: "Orders", icon: Layers },
-  { href: "/settings", label: "Settings", icon: Settings }
 ];
 
 export default function AppShell({
