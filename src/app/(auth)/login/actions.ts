@@ -12,7 +12,7 @@ export async function signInWithPassword(formData: FormData) {
   const { error, data } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    return;
+    redirect(`/login?error=${encodeURIComponent("Invalid email or password")}`);
   }
 
   if (data.user?.email) {
@@ -32,6 +32,17 @@ export async function signInWithPassword(formData: FormData) {
   redirect("/dashboard");
 }
 
+export async function signUpWithPassword(formData: FormData) {
+  const email = String(formData.get("email") ?? "");
+  const password = String(formData.get("password") ?? "");
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase.auth.signUp({ email, password });
+  if (error) {
+    redirect(`/login?error=${encodeURIComponent(error.message)}`);
+  }
+  redirect(`/login?message=${encodeURIComponent("Check your email to confirm your account.")}`);
+}
+
 export async function sendMagicLink(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const supabase = createSupabaseServerClient();
@@ -43,10 +54,22 @@ export async function sendMagicLink(formData: FormData) {
   });
 
   if (error) {
-    return;
+    redirect(`/login?error=${encodeURIComponent(error.message)}`);
   }
 
-  return;
+  redirect(`/login?message=${encodeURIComponent("Magic link sent. Check your email.")}`);
+}
+
+export async function sendPasswordReset(formData: FormData) {
+  const email = String(formData.get("email") ?? "");
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/auth/callback`
+  });
+  if (error) {
+    redirect(`/login?error=${encodeURIComponent(error.message)}`);
+  }
+  redirect(`/login?message=${encodeURIComponent("Password reset email sent.")}`);
 }
 
 export async function signInWithGoogle(formData: FormData) {
@@ -60,7 +83,7 @@ export async function signInWithGoogle(formData: FormData) {
   });
 
   if (error) {
-    return;
+    redirect(`/login?error=${encodeURIComponent(error.message)}`);
   }
 
   if (data.url) {

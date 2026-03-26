@@ -15,12 +15,14 @@ export default function OrderNeedGroup({
   supplier,
   items,
   shareOnly = false,
-  shareText
+  shareText,
+  allowBulk = true
 }: {
   supplier: string;
   items: { id: string; name: string; qty: string }[];
   shareOnly?: boolean;
   shareText?: string;
+  allowBulk?: boolean;
 }) {
   const [hidden, setHidden] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -46,19 +48,21 @@ export default function OrderNeedGroup({
           <span className="text-xs text-ink-500">{items.length} items</span>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            disabled={isPending}
-            onClick={() =>
-              startTransition(() => {
-                setHidden(true);
-                return markSupplierDone(buildFormData(supplier));
-              })
-            }
-            className="rounded-full bg-ink-900 px-3 py-1 text-xs font-semibold text-white shadow-soft transition active:translate-y-[1px]"
-          >
-            Mark all done
-          </button>
+          {allowBulk && (
+            <button
+              type="button"
+              disabled={isPending}
+              onClick={() =>
+                startTransition(() => {
+                  setHidden(true);
+                  return markSupplierDone(buildFormData(supplier));
+                })
+              }
+              className="rounded-full bg-ink-900 px-3 py-1 text-xs font-semibold text-white shadow-soft transition active:translate-y-[1px]"
+            >
+              Mark all done
+            </button>
+          )}
           <OrderShare
             supplier={supplier}
             items={items.map((item) => ({ name: item.name, qty: item.qty }))}

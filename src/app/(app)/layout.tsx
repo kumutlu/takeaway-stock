@@ -6,6 +6,6 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await requireUser();
-  return <AppShell>{children}</AppShell>;
+  const { appUser } = await requireUser();
+  return <AppShell role={appUser.role}>{children}</AppShell>;
 }

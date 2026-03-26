@@ -1,5 +1,6 @@
 import { getOrderNeedsForWeek, getWeekStart } from "@/lib/order-utils";
 import OrderNeedGroup from "@/components/order-need-group";
+import { requireUser } from "@/lib/auth";
 
 function groupBySupplier(items: Array<{ id: string; product: { supplierName: string; itemName: string; unit: string | null }; neededQty: number }>) {
   const grouped: Record<string, typeof items> = {};
@@ -11,6 +12,7 @@ function groupBySupplier(items: Array<{ id: string; product: { supplierName: str
 }
 
 export default async function OrdersPage() {
+  const { appUser } = await requireUser();
   const weekStart = getWeekStart();
   const needs = await getOrderNeedsForWeek(weekStart);
   const grouped = groupBySupplier(needs);
@@ -45,6 +47,7 @@ export default async function OrdersPage() {
               name: item.product.itemName,
               qty: `${item.neededQty} ${item.product.unit ?? ""}`.trim()
             }))}
+            allowBulk={appUser.role === "ADMIN"}
           />
         ))}
         {!needs.length && (

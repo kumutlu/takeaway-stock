@@ -13,7 +13,13 @@ const navItems: { href: Route; label: string; icon: typeof LayoutGrid }[] = [
   { href: "/settings", label: "Settings", icon: Settings }
 ];
 
-export default function AppShell({ children }: { children: React.ReactNode }) {
+export default function AppShell({
+  children,
+  role
+}: {
+  children: React.ReactNode;
+  role: "ADMIN" | "STAFF";
+}) {
   return (
     <div className="min-h-screen bg-transparent">
       <div className="flex min-h-screen">
@@ -50,7 +56,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               </div>
               <div className="flex items-center gap-3">
                 <div className="hidden rounded-full bg-ink-900 px-3 py-1 text-xs font-semibold text-white md:block shadow-ring">
-                  Admin
+                  {role === "ADMIN" ? "Admin" : "Staff"}
                 </div>
                 <UserMenu />
               </div>
