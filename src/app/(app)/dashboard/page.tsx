@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { getOrderNeedsForWeek, getTodayWeekday, getWeekStart } from "@/lib/order-utils";
 import PushOptIn from "@/components/push-optin";
@@ -24,12 +25,21 @@ export default async function DashboardPage() {
       }),
       prisma.product.findMany({
         where: { isActive: true },
-        select: { currentStock: true, parLevel: true, inventoryCheckDay: true, minimumOrder: true }
+        select: {
+          currentStock: true,
+          parLevel: true,
+          inventoryCheckDay: true,
+          minimumOrder: true,
+          supplierName: true
+        }
       }),
       getOrderNeedsForWeek(weekStart)
     ]);
 
   const checksToday = products.filter((product) => product.inventoryCheckDay === today);
+  const suppliersToday = Array.from(
+    new Set(checksToday.map((product) => product.supplierName).filter(Boolean))
+  ) as string[];
 
   const brandCounts = Object.fromEntries(
     brandCountsRaw.map((item) => [item.brandLabel ?? "Unknown", item._count.brandLabel])
@@ -66,6 +76,23 @@ export default async function DashboardPage() {
             <p className="mt-3 font-[var(--font-display)] text-3xl text-ink-900">
               {card.value}
             </p>
+            {card.label === "Checks today" && (
+              <div className="mt-4 flex flex-wrap gap-2 text-xs text-ink-500">
+                {suppliersToday.length === 0 ? (
+                  <span>No suppliers scheduled.</span>
+                ) : (
+                  suppliersToday.map((supplier) => (
+                    <Link
+                      key={supplier}
+                      href={`/order-needs?supplier=${encodeURIComponent(supplier)}`}
+                      className="rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-xs font-medium text-ink-600 hover:border-ink-300"
+                    >
+                      {supplier}
+                    </Link>
+                  ))
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>
