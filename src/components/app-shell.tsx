@@ -55,12 +55,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 <UserMenu />
               </div>
             </div>
-            <nav className="mt-4 flex gap-2 overflow-x-auto pb-2 lg:hidden">
+            <nav className="mt-3 -mx-4 flex gap-2 overflow-x-auto px-4 pb-2 lg:hidden">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="whitespace-nowrap rounded-full border border-ink-200 bg-white/90 px-3 py-1.5 text-xs text-ink-600 shadow-ring"
+                  className="shrink-0 whitespace-nowrap rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-[11px] font-medium text-ink-600 shadow-ring"
                 >
                   {item.label}
                 </Link>
