@@ -11,8 +11,10 @@ body {
     radial-gradient(circle at 85% 20%, rgba(236, 200, 150, 0.12), transparent 45%),
     #f7f7f9;
   color: #1d222b;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
 }
 
 * {
@@ -27,4 +29,13 @@ body {
   border: 1px solid rgba(27, 34, 44, 0.08);
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(12px);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

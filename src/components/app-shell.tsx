@@ -47,7 +47,7 @@ export default function AppShell({
             Optimized for a 4-person team.
           </div>
         </aside>
-        <div className="flex flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col">
           <header className="border-b border-ink-100 bg-white/80 px-4 py-4 backdrop-blur-xl md:px-6">
             <div className="flex items-center justify-between">
               <div>
@@ -61,12 +61,12 @@ export default function AppShell({
                 <UserMenu />
               </div>
             </div>
-            <nav className="mt-3 -mx-4 flex gap-2 overflow-x-auto px-4 pb-2 lg:hidden">
+            <nav className="no-scrollbar mt-3 -mx-4 flex gap-2 overflow-x-auto px-4 pb-2 lg:hidden">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="shrink-0 whitespace-nowrap rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-[11px] font-medium text-ink-600 shadow-ring"
+                  className="shrink-0 whitespace-nowrap rounded-full border border-ink-200 bg-white/95 px-4 py-2 text-sm font-semibold text-ink-700 shadow-ring min-h-[44px] flex items-center"
                 >
                   {item.label}
                 </Link>

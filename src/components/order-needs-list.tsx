@@ -32,18 +32,18 @@ export default function OrderNeedsList({
 
   return (
     <>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search items or suppliers"
-          className="w-full rounded-full border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+          className="w-full rounded-full border border-ink-200 bg-white/90 px-4 py-3 text-sm shadow-ring"
         />
         {query && (
           <button
             type="button"
             onClick={() => setQuery("")}
-            className="rounded-full border border-ink-200 bg-white/90 px-3 py-2 text-xs text-ink-600 shadow-ring"
+            className="rounded-full border border-ink-200 bg-white/90 px-4 py-2 text-xs text-ink-600 shadow-ring"
           >
             Clear
           </button>

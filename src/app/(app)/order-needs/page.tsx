@@ -48,10 +48,10 @@ export default async function OrderNeedsPage({
         </a>
       </div>
 
-      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+      <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
         <a
           href="/order-needs"
-          className={`rounded-full border px-3 py-1 text-xs transition ${
+          className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition min-h-[44px] flex items-center ${
             supplierFilter
               ? "border-ink-200 bg-white/80 text-ink-600 hover:border-ink-300"
               : "border-ink-900 bg-ink-900 text-white"
@@ -63,7 +63,7 @@ export default async function OrderNeedsPage({
           <a
             key={supplier.supplierName}
             href={`/order-needs?supplier=${encodeURIComponent(supplier.supplierName ?? "")}`}
-            className={`rounded-full border px-3 py-1 text-xs transition ${
+            className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition min-h-[44px] flex items-center ${
               supplierFilter === supplier.supplierName
                 ? "border-ink-900 bg-ink-900 text-white"
                 : "border-ink-200 bg-white/80 text-ink-600 hover:border-ink-300"

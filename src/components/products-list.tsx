@@ -39,24 +39,24 @@ export default function ProductsList({
 
   return (
     <>
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-ink-900">Products</h1>
           <p className="text-sm text-ink-500">Filter, sort, and update quickly.</p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <div className="flex gap-2">
+        <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:flex-nowrap">
+          <div className="flex w-full gap-2 sm:w-auto">
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              className="rounded-full border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+              className="w-full rounded-full border border-ink-200 bg-white/90 px-4 py-3 text-sm shadow-ring sm:w-64"
               placeholder="Search products"
             />
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
-                className="rounded-full border border-ink-200 bg-white/90 px-3 py-2 text-xs text-ink-600 shadow-ring"
+                className="rounded-full border border-ink-200 bg-white/90 px-4 py-2 text-xs text-ink-600 shadow-ring"
               >
                 Clear
               </button>
@@ -64,7 +64,7 @@ export default function ProductsList({
           </div>
           <Link
             href="/products/new"
-            className="rounded-full border border-ink-200 bg-white/90 px-4 py-2 text-sm font-semibold text-ink-700 shadow-ring"
+            className="w-full rounded-full border border-ink-200 bg-white/90 px-4 py-3 text-sm font-semibold text-ink-700 shadow-ring sm:w-auto"
           >
             New product
           </Link>
