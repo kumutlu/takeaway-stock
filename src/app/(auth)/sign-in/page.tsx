@@ -28,7 +28,7 @@ export default function SignInPage({
           </div>
         )}
 
-        <SignInForm action={signInWithPassword} />
+        <SignInForm action={signInWithPassword} error={error} />
 
         <div className="mt-3 flex items-center justify-between text-xs text-ink-500">
           <Link className="hover:text-ink-700" href="/forgot-password">
