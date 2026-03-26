@@ -49,7 +49,8 @@ export async function sendMagicLink(formData: FormData) {
   return { ok: true, message: "Magic link gonderildi." };
 }
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(formData: FormData) {
+  void formData;
   const supabase = createSupabaseServerClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
