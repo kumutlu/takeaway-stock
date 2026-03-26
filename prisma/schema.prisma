@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  ADMIN
+  STAFF
+}
+
+enum StorageType {
+  AMBIENT
+  FRIDGE
+  FROZEN
+  FROZEN_DEFROST
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  DISCONTINUED
+}
+
+enum OptionalType {
+  CORE
+  OPTIONAL
+}
+
+enum Weekday {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum MovementType {
+  COUNT
+  ADJUSTMENT
+  RECEIVED
+  WASTE
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  role      UserRole @default(STAFF)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stockMovements StockMovement[]
+  orderNeeds     OrderNeed[]
+  pushSubscriptions PushSubscription[]
+  auditLogs AuditLog[]
+}
+
+model Supplier {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
+}
+
+model Brand {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
+}
+
+model Product {
+  id                 String         @id @default(uuid())
+  supplierId         String
+  brandId            String?
+  supplierName       String
+  brandLabel         String
+  brandTags          String[]
+  itemName           String
+  storage            StorageType
+  status             ProductStatus  @default(ACTIVE)
+  optionalNote       OptionalType   @default(CORE)
+  orderDay           Weekday?
+  inventoryCheckDay  Weekday?
+  minimumOrder       Int?
+  currentStock       Int?           @default(0)
+  parLevel           Int?           @default(0)
+  unit               String?
+  lastCountDate      DateTime?
+  nextCheckDate      DateTime?
+  notes              String?
+  isActive           Boolean        @default(true)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  supplier           Supplier       @relation(fields: [supplierId], references: [id])
+  brand              Brand?         @relation(fields: [brandId], references: [id])
+  stockMovements     StockMovement[]
+  orderNeeds         OrderNeed[]
+  inventoryChecks    InventoryCheck[]
+  orderSuggestions   OrderSuggestion[]
+
+  @@index([supplierId])
+  @@index([brandId])
+  @@index([itemName])
+  @@index([orderDay])
+  @@index([inventoryCheckDay])
+}
+
+model StockMovement {
+  id            String       @id @default(uuid())
+  productId     String
+  userId        String?
+  type          MovementType
+  quantity      Int
+  previousStock Int?
+  newStock      Int?
+  notes         String?
+  createdAt     DateTime     @default(now())
+
+  product       Product      @relation(fields: [productId], references: [id])
+  user          User?        @relation(fields: [userId], references: [id])
+
+  @@index([productId])
+}
+
+model OrderNeed {
+  id        String   @id @default(uuid())
+  productId String
+  userId    String?
+  weekStart DateTime
+  neededQty Int
+  notes     String?
+  done      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([productId])
+  @@index([weekStart])
+  @@unique([productId, weekStart])
+}
+
+model InventoryCheck {
+  id          String   @id @default(uuid())
+  productId   String
+  checkDate   DateTime
+  status      String?
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  product     Product  @relation(fields: [productId], references: [id])
+
+  @@index([productId])
+}
+
+model OrderSuggestion {
+  id          String   @id @default(uuid())
+  productId   String
+  suggestedAt DateTime @default(now())
+  quantity    Int
+  notes       String?
+
+  product     Product  @relation(fields: [productId], references: [id])
+
+  @@index([productId])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model AppSetting {
+  id                 Int      @id @default(1)
+  lowStockThreshold  String   @default("PAR_LEVEL")
+  criticalPercent    Int      @default(50)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model PushSubscription {
+  id        String   @id @default(uuid())
+  userId    String?
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id])
+}
