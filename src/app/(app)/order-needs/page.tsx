@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/db";
 import { getWeekStart } from "@/lib/order-utils";
-import OrderNeedRow from "@/components/order-need-row";
-import OrderNeedCard from "@/components/order-need-card";
+import OrderNeedsList from "@/components/order-needs-list";
 
 function getParam(searchParams: Record<string, string | string[] | undefined>, key: string) {
   const value = searchParams[key];
@@ -30,6 +29,7 @@ export default async function OrderNeedsPage({
   ]);
 
   const needMap = new Map(needs.map((need) => [need.productId, need]));
+  const needLookup = Object.fromEntries(needMap.entries().map(([key, need]) => [key, need.neededQty]));
 
   return (
     <section className="space-y-5 sm:space-y-6">
@@ -74,52 +74,15 @@ export default async function OrderNeedsPage({
         ))}
       </div>
 
-      <div className="hidden rounded-2xl border border-ink-100 bg-white/90 shadow-soft lg:block">
-        <div className="grid grid-cols-6 gap-2 border-b border-ink-100 px-6 py-3 text-xs uppercase tracking-[0.18em] text-ink-400">
-          <span className="col-span-2">Item</span>
-          <span>Supplier</span>
-          <span>Order Day</span>
-          <span>Qty</span>
-          <span>Actions</span>
-        </div>
-        <div className="divide-y divide-ink-100">
-          {products.map((product) => {
-            const need = needMap.get(product.id);
-            const qty = need?.neededQty ?? 0;
-            return (
-              <OrderNeedRow
-                key={product.id}
-                product={{
-                  id: product.id,
-                  itemName: product.itemName,
-                  supplierName: product.supplierName,
-                  orderDay: product.orderDay
-                }}
-                initialQty={qty}
-              />
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="grid gap-4 lg:hidden">
-        {products.map((product) => {
-          const need = needMap.get(product.id);
-          const qty = need?.neededQty ?? 0;
-          return (
-            <OrderNeedCard
-              key={product.id}
-              product={{
-                id: product.id,
-                itemName: product.itemName,
-                supplierName: product.supplierName,
-                orderDay: product.orderDay
-              }}
-              initialQty={qty}
-            />
-          );
-        })}
-      </div>
+      <OrderNeedsList
+        products={products.map((product) => ({
+          id: product.id,
+          itemName: product.itemName,
+          supplierName: product.supplierName,
+          orderDay: product.orderDay
+        }))}
+        needs={needLookup}
+      />
     </section>
   );
 }

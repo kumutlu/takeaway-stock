@@ -14,12 +14,25 @@ export default async function OrdersPage() {
   const weekStart = getWeekStart();
   const needs = await getOrderNeedsForWeek(weekStart);
   const grouped = groupBySupplier(needs);
+  const allText = Object.entries(grouped)
+    .map(([supplier, items]) => {
+      const lines = items
+        .map((item) => `- ${item.product.itemName}: ${item.neededQty} ${item.product.unit ?? ""}`.trim())
+        .join("\n");
+      return `# ${supplier}\n${lines}`;
+    })
+    .join("\n\n");
 
   return (
     <section className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-ink-900">Weekly Order List</h1>
-        <p className="text-sm text-ink-500">Supplier-based list from staff-entered needs.</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold text-ink-900">Weekly Order List</h1>
+          <p className="text-sm text-ink-500">Supplier-based list from staff-entered needs.</p>
+        </div>
+        {needs.length > 0 && (
+          <OrderNeedGroup supplier="All suppliers" items={[]} shareOnly shareText={allText} />
+        )}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">

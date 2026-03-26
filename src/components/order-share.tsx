@@ -3,20 +3,22 @@
 import { useEffect, useState } from "react";
 import { Share2, Send, Mail, MessageCircle } from "lucide-react";
 
-function buildText(supplier: string, items: { name: string; qty: string }[]) {
-  const lines = items.map((item) => `- ${item.name}: ${item.qty}`).join("\n");
-  return `Order List — ${supplier}\n\n${lines}`;
-}
-
 export default function OrderShare({
   supplier,
-  items
+  items,
+  title,
+  textOverride
 }: {
   supplier: string;
   items: { name: string; qty: string }[];
+  title?: string;
+  textOverride?: string;
 }) {
   const [canShare, setCanShare] = useState(false);
-  const text = buildText(supplier, items);
+  const text =
+    textOverride ??
+    `Order List — ${supplier}\n\n${items.map((item) => `- ${item.name}: ${item.qty}`).join("\n")}`;
+  const shareTitle = title ?? `Order List — ${supplier}`;
   const encoded = encodeURIComponent(text);
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export default function OrderShare({
 
   const shareNative = async () => {
     if (!navigator.share) return;
-    await navigator.share({ title: `Order List — ${supplier}`, text });
+    await navigator.share({ title: shareTitle, text });
   };
 
   return (

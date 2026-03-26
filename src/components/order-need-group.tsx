@@ -13,15 +13,30 @@ function buildFormData(supplier: string) {
 
 export default function OrderNeedGroup({
   supplier,
-  items
+  items,
+  shareOnly = false,
+  shareText
 }: {
   supplier: string;
   items: { id: string; name: string; qty: string }[];
+  shareOnly?: boolean;
+  shareText?: string;
 }) {
   const [hidden, setHidden] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   if (hidden) return null;
+
+  if (shareOnly) {
+    return (
+      <OrderShare
+        supplier={supplier}
+        items={items}
+        title="Weekly Order List"
+        textOverride={shareText}
+      />
+    );
+  }
 
   return (
     <div className="rounded-2xl border border-ink-100 bg-white/90 p-5 shadow-soft">
