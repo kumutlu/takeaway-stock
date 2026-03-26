@@ -77,14 +77,14 @@ export default function OrderNeedCard({
   };
 
   return (
-    <div className="rounded-2xl border border-ink-100 bg-white/80 p-4 shadow-soft">
+    <div className="rounded-2xl border border-ink-100 bg-white/85 p-5 shadow-soft">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-ink-900">{product.itemName}</p>
+          <p className="text-base font-semibold text-ink-900">{product.itemName}</p>
           <p className="text-xs text-ink-500">{product.supplierName}</p>
         </div>
-        <span className="rounded-full border border-ink-200 bg-white/90 px-2 py-1 text-xs font-semibold text-ink-900">
-          Qty: {localQty}
+        <span className="rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-sm font-semibold text-ink-900">
+          Qty {localQty}
         </span>
       </div>
       <div className="mt-3 text-xs text-ink-500">
@@ -93,7 +93,7 @@ export default function OrderNeedCard({
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <button
           type="button"
-          className="rounded-full border border-ink-900 bg-ink-900 px-3 py-1 text-xs font-semibold text-white shadow-sm transition hover:-translate-y-[1px]"
+          className="h-10 rounded-full border border-ink-900 bg-ink-900 px-4 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-[1px] active:translate-y-0"
           onClick={() =>
             (() => {
             playBeep();
@@ -111,7 +111,7 @@ export default function OrderNeedCard({
           name="neededQty"
           aria-label="Needed quantity"
           value={localQty}
-          className="rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-xs text-ink-700 shadow-sm"
+          className="h-10 rounded-full border border-ink-200 bg-white/90 px-3 text-sm text-ink-700 shadow-sm"
           disabled={isPending}
           onChange={(event) => {
             const value = Number(event.target.value);
@@ -128,7 +128,7 @@ export default function OrderNeedCard({
         <button
           type="button"
           aria-label="Reset quantity"
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-ink-200 bg-white/80 text-ink-500 transition hover:border-ink-300 hover:text-ink-700"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-ink-200 bg-white/80 text-ink-500 transition hover:border-ink-300 hover:text-ink-700"
           disabled={isPending}
           onClick={() =>
             startTransition(() => {

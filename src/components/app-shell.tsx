@@ -60,14 +60,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="whitespace-nowrap rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-xs text-ink-600 shadow-ring"
+                  className="whitespace-nowrap rounded-full border border-ink-200 bg-white/90 px-3 py-1.5 text-xs text-ink-600 shadow-ring"
                 >
                   {item.label}
                 </Link>
               ))}
             </nav>
           </header>
-          <main className="flex-1 px-4 py-6 md:px-6">{children}</main>
+          <main className="flex-1 px-4 py-5 sm:py-6 md:px-6">{children}</main>
         </div>
       </div>
     </div>
