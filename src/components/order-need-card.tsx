@@ -128,8 +128,7 @@ export default function OrderNeedCard({
         <button
           type="button"
           aria-label="Reset quantity"
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-ink-200 bg-white/80 text-ink-500 transition hover:border-ink-300 hover:text-ink-700"
-          disabled={isPending}
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-ink-200 bg-white/80 text-ink-500 transition hover:border-ink-300 hover:text-ink-700 cursor-pointer"
           onClick={() => {
             setLocalQty(0);
             scheduleFlush(0);
