@@ -12,7 +12,7 @@ export async function signInWithPassword(formData: FormData) {
   const { error, data } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    return { ok: false, message: error.message };
+    return;
   }
 
   if (data.user?.email) {
@@ -67,5 +67,5 @@ export async function signInWithGoogle(formData: FormData) {
     redirect(data.url);
   }
 
-  return { ok: false, message: "Google login baslatilamadi." };
+  return;
 }
