@@ -5,6 +5,20 @@ import OrderNeedLine from "@/components/order-need-line";
 import OrderShare from "@/components/order-share";
 import { markSupplierDone } from "@/app/actions/order-needs";
 
+const SUPPLIER_ORDER_URLS: Record<string, string> = {
+  adams: "https://adamsfoodservice.com",
+  booker: "https://www.booker.co.uk",
+  ics: "https://cater-choice.com/branch/dashboard",
+  jj: "https://www.jjfoodservice.com",
+  pe: "https://www.packagingenvironmental.co.uk",
+  olleco: "https://www.olleco.co.uk"
+};
+
+function getSupplierOrderUrl(supplier: string) {
+  const key = supplier.trim().toLowerCase();
+  return SUPPLIER_ORDER_URLS[key];
+}
+
 function buildFormData(supplier: string) {
   const formData = new FormData();
   formData.set("supplier", supplier);
@@ -40,6 +54,8 @@ export default function OrderNeedGroup({
     );
   }
 
+  const orderUrl = getSupplierOrderUrl(supplier);
+
   return (
     <div className="rounded-2xl border border-ink-100 bg-white/90 p-5 shadow-soft">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -48,6 +64,16 @@ export default function OrderNeedGroup({
           <span className="text-xs text-ink-500">{items.length} items</span>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {orderUrl && (
+            <a
+              href={orderUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-ink-200 px-3 py-1 text-xs font-semibold text-ink-700 transition hover:border-ink-300 hover:text-ink-900"
+            >
+              Open supplier site
+            </a>
+          )}
           {allowBulk && (
             <button
               type="button"
