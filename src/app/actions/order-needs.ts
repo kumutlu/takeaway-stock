@@ -204,7 +204,7 @@ export async function prepareJjCart(formData: FormData) {
   const searchBaseUrl =
     supplierKey === "jj"
       ? "https://www.jjfoodservice.com/search?q="
-      : "https://cater-choice.com/branch/dashboard?search=";
+      : "https://cater-choice.com/branch/pos?search=";
 
   const lines = needs.slice(0, 15).map((need) => {
     const match = resolveSupplierSearch(supplierName, need.product.itemName);
