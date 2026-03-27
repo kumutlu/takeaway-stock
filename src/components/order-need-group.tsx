@@ -9,7 +9,7 @@ import { markSupplierDone } from "@/app/actions/order-needs";
 const SUPPLIER_ORDER_URLS: Record<string, string> = {
   adams: "https://adamsfoodservice.com",
   booker: "https://www.booker.co.uk",
-  ics: "https://cater-choice.com/branch/dashboard",
+  ics: "https://cater-choice.com/branch/pos",
   jj: "https://www.jjfoodservice.com",
   "n bazaar": "https://wa.me/447436342009",
   pe: "https://www.packagingenvironmental.co.uk",
