@@ -10,6 +10,7 @@ const SUPPLIER_ORDER_URLS: Record<string, string> = {
   booker: "https://www.booker.co.uk",
   ics: "https://cater-choice.com/branch/dashboard",
   jj: "https://www.jjfoodservice.com",
+  "n bazaar": "https://wa.me/447436342009",
   pe: "https://www.packagingenvironmental.co.uk",
   olleco: "https://www.olleco.co.uk"
 };
