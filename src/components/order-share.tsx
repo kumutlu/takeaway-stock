@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Share2, Send, Mail, MessageCircle } from "lucide-react";
+import { useState } from "react";
+import { Copy, MessageCircle } from "lucide-react";
 
 export default function OrderShare({
   supplier,
@@ -14,34 +14,34 @@ export default function OrderShare({
   title?: string;
   textOverride?: string;
 }) {
-  const [canShare, setCanShare] = useState(false);
+  const [copied, setCopied] = useState(false);
   const text =
     textOverride ??
     `Order List — ${supplier}\n\n${items.map((item) => `- ${item.name}: ${item.qty}`).join("\n")}`;
   const shareTitle = title ?? `Order List — ${supplier}`;
   const encoded = encodeURIComponent(text);
 
-  useEffect(() => {
-    setCanShare(typeof navigator !== "undefined" && !!navigator.share);
-  }, []);
-
-  const shareNative = async () => {
-    if (!navigator.share) return;
-    await navigator.share({ title: shareTitle, text });
+  const copyText = async () => {
+    const content = `${shareTitle}\n\n${text}`;
+    try {
+      await navigator.clipboard.writeText(content);
+    } catch {
+      const el = document.createElement("textarea");
+      el.value = content;
+      el.style.position = "fixed";
+      el.style.opacity = "0";
+      document.body.appendChild(el);
+      el.focus();
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1200);
   };
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      {canShare && (
-        <button
-          type="button"
-          onClick={shareNative}
-          className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-xs text-ink-600 shadow-ring"
-        >
-          <Share2 size={14} />
-          Share
-        </button>
-      )}
       <a
         href={`https://wa.me/?text=${encoded}`}
         target="_blank"
@@ -51,22 +51,14 @@ export default function OrderShare({
         <MessageCircle size={14} />
         WhatsApp
       </a>
-      <a
-        href={`https://t.me/share/url?url=&text=${encoded}`}
-        target="_blank"
-        rel="noreferrer"
+      <button
+        type="button"
+        onClick={copyText}
         className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-xs text-ink-600 shadow-ring"
       >
-        <Send size={14} />
-        Telegram
-      </a>
-      <a
-        href={`mailto:?subject=${encodeURIComponent(`Order List — ${supplier}`)}&body=${encoded}`}
-        className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-xs text-ink-600 shadow-ring"
-      >
-        <Mail size={14} />
-        Email
-      </a>
+        <Copy size={14} />
+        {copied ? "Copied" : "Copy"}
+      </button>
     </div>
   );
 }
