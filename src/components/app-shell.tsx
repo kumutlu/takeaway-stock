@@ -26,7 +26,7 @@ export default function AppShell({
             className="rounded-2xl border border-white/40 bg-ink-900/95 px-4 py-3 text-white shadow-soft transition hover:-translate-y-[1px]"
           >
             <p className="text-[10px] uppercase tracking-[0.4em] text-ink-200">Wrap'n Bowl</p>
-            <p className="mt-2 font-[var(--font-display)] text-2xl">Stock Hub</p>
+            <p className="mt-2 font-[var(--font-display)] text-2xl">Order Hub</p>
           </Link>
           <nav className="mt-8 flex flex-1 flex-col gap-2">
             {navItems.map((item) => (
@@ -45,8 +45,8 @@ export default function AppShell({
           <header className="border-b border-ink-100 bg-white/80 px-4 py-4 backdrop-blur-xl md:px-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs tracking-[0.2em] text-ink-400">Live Stock</p>
-                <p className="text-lg font-semibold text-ink-900">Stock Overview</p>
+                <p className="text-xs tracking-[0.2em] text-ink-400">Live Orders</p>
+                <p className="text-lg font-semibold text-ink-900">Order Overview</p>
               </div>
               <div className="flex items-center gap-3">
                 <div className="hidden rounded-full bg-ink-900 px-3 py-1 text-xs font-semibold text-white md:block shadow-ring">

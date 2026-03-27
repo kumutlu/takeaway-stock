@@ -13,8 +13,8 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Wrap'n Bowl Stock",
-  description: "Simple, fast stock tracking for Wrap'n Bowl"
+  title: "Wrap'n Bowl Orders",
+  description: "Simple, fast order tracking for Wrap'n Bowl"
 };
 
 export const viewport: Viewport = {
