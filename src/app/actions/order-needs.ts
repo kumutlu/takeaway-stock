@@ -5,6 +5,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { getWeekStart } from "@/lib/order-utils";
+import { resolveJjSearch } from "@/lib/jj-cart";
 
 const createSchema = z.object({
   productId: z.string().min(1),
@@ -169,4 +170,55 @@ export async function markSupplierDone(formData: FormData) {
   revalidatePath("/orders");
   revalidatePath("/order-needs");
   revalidatePath("/dashboard");
+}
+
+export async function prepareJjCart(formData: FormData) {
+  const { appUser } = await requireUser();
+  if (appUser.role !== "ADMIN") {
+    return {
+      ok: false,
+      message: "Only admin users can run JJ cart preparation."
+    };
+  }
+
+  const supplierName = String(formData.get("supplier") ?? "");
+  if (supplierName.trim().toLowerCase() !== "jj") {
+    return {
+      ok: false,
+      message: "This action is only available for JJ."
+    };
+  }
+
+  const weekStart = getWeekStart();
+  const needs = await prisma.orderNeed.findMany({
+    where: {
+      weekStart,
+      done: false,
+      product: { supplierName: "JJ" }
+    },
+    include: { product: true },
+    orderBy: { createdAt: "desc" }
+  });
+
+  const lines = needs.slice(0, 15).map((need) => {
+    const match = resolveJjSearch(need.product.itemName);
+    return {
+      productId: need.productId,
+      name: need.product.itemName,
+      neededQty: need.neededQty,
+      searchTerm: match.searchTerm,
+      suggestedQty: Math.max(need.neededQty, match.minQty),
+      isMapped: match.isMapped,
+      searchUrl: `https://www.jjfoodservice.com/search?q=${encodeURIComponent(match.searchTerm)}`
+    };
+  });
+
+  const mappedCount = lines.filter((line) => line.isMapped).length;
+
+  return {
+    ok: true,
+    message: `Prepared ${lines.length} JJ items (${mappedCount} mapped, ${lines.length - mappedCount} review needed).`,
+    lines,
+    preparedAt: new Date().toISOString()
+  };
 }

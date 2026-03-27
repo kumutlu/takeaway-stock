@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import OrderNeedLine from "@/components/order-need-line";
 import OrderShare from "@/components/order-share";
+import JjPreparePanel from "@/components/jj-prepare-panel";
 import { markSupplierDone } from "@/app/actions/order-needs";
 
 const SUPPLIER_ORDER_URLS: Record<string, string> = {
@@ -65,6 +66,7 @@ export default function OrderNeedGroup({
           <span className="text-xs text-ink-500">{items.length} items</span>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <JjPreparePanel supplier={supplier} />
           {orderUrl && (
             <a
               href={orderUrl}
