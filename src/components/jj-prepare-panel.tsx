@@ -23,8 +23,9 @@ type PreparedState = {
 export default function JjPreparePanel({ supplier }: { supplier: string }) {
   const [result, setResult] = useState<PreparedState | null>(null);
   const [isPending, startTransition] = useTransition();
+  const supplierKey = supplier.trim().toLowerCase();
 
-  if (supplier.trim().toLowerCase() !== "jj") return null;
+  if (!["jj", "ics"].includes(supplierKey)) return null;
 
   return (
     <div className="flex flex-col gap-2">
@@ -39,9 +40,9 @@ export default function JjPreparePanel({ supplier }: { supplier: string }) {
             setResult(response as PreparedState);
           })
         }
-        className="rounded-full border border-ink-200 px-3 py-1 text-xs font-semibold text-ink-700 transition hover:border-ink-300 hover:text-ink-900 disabled:opacity-60"
+              className="rounded-full border border-ink-200 px-3 py-1 text-xs font-semibold text-ink-700 transition hover:border-ink-300 hover:text-ink-900 disabled:opacity-60"
       >
-        {isPending ? "Preparing..." : "Prepare JJ cart"}
+        {isPending ? "Preparing..." : `Prepare ${supplier.toUpperCase()} cart`}
       </button>
 
       {result && (
@@ -66,7 +67,7 @@ export default function JjPreparePanel({ supplier }: { supplier: string }) {
                     rel="noreferrer"
                     className="rounded-full border border-ink-200 px-2 py-1 text-[11px] font-semibold text-ink-700 transition hover:border-ink-300 hover:text-ink-900"
                   >
-                    Search
+                    {supplierKey === "ics" ? "Open" : "Search"}
                   </a>
                 </div>
               ))}

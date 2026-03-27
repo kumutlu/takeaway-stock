@@ -4,14 +4,23 @@ type JjOverride = {
 };
 
 const JJ_OVERRIDES: Record<string, JjOverride> = {};
+const ICS_OVERRIDES: Record<string, JjOverride> = {};
 
 function normalizeName(input: string) {
   return input.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
-export function resolveJjSearch(itemName: string) {
+export function resolveSupplierSearch(supplier: string, itemName: string) {
   const key = normalizeName(itemName);
-  const override = JJ_OVERRIDES[key];
+  const supplierKey = supplier.trim().toLowerCase();
+  const override =
+    supplierKey === "jj"
+      ? JJ_OVERRIDES[key]
+      : supplierKey === "ics"
+        ? ICS_OVERRIDES[key]
+        : undefined;
+
+  const defaultSearchTerm = itemName;
   if (override) {
     return {
       searchTerm: override.searchTerm,
@@ -21,7 +30,7 @@ export function resolveJjSearch(itemName: string) {
   }
 
   return {
-    searchTerm: itemName,
+    searchTerm: defaultSearchTerm,
     minQty: 1,
     isMapped: false
   };

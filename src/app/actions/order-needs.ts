@@ -5,7 +5,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { getWeekStart } from "@/lib/order-utils";
-import { resolveJjSearch } from "@/lib/jj-cart";
+import { resolveSupplierSearch } from "@/lib/jj-cart";
 
 const createSchema = z.object({
   productId: z.string().min(1),
@@ -182,10 +182,11 @@ export async function prepareJjCart(formData: FormData) {
   }
 
   const supplierName = String(formData.get("supplier") ?? "");
-  if (supplierName.trim().toLowerCase() !== "jj") {
+  const supplierKey = supplierName.trim().toLowerCase();
+  if (!["jj", "ics"].includes(supplierKey)) {
     return {
       ok: false,
-      message: "This action is only available for JJ."
+      message: "This action is only available for JJ and ICS."
     };
   }
 
@@ -194,14 +195,19 @@ export async function prepareJjCart(formData: FormData) {
     where: {
       weekStart,
       done: false,
-      product: { supplierName: "JJ" }
+      product: { supplierName: supplierName }
     },
     include: { product: true },
     orderBy: { createdAt: "desc" }
   });
 
+  const searchBaseUrl =
+    supplierKey === "jj"
+      ? "https://www.jjfoodservice.com/search?q="
+      : "https://cater-choice.com/branch/dashboard?search=";
+
   const lines = needs.slice(0, 15).map((need) => {
-    const match = resolveJjSearch(need.product.itemName);
+    const match = resolveSupplierSearch(supplierName, need.product.itemName);
     return {
       productId: need.productId,
       name: need.product.itemName,
@@ -209,15 +215,16 @@ export async function prepareJjCart(formData: FormData) {
       searchTerm: match.searchTerm,
       suggestedQty: Math.max(need.neededQty, match.minQty),
       isMapped: match.isMapped,
-      searchUrl: `https://www.jjfoodservice.com/search?q=${encodeURIComponent(match.searchTerm)}`
+      searchUrl: `${searchBaseUrl}${encodeURIComponent(match.searchTerm)}`
     };
   });
 
   const mappedCount = lines.filter((line) => line.isMapped).length;
+  const supplierLabel = supplierKey.toUpperCase();
 
   return {
     ok: true,
-    message: `Prepared ${lines.length} JJ items (${mappedCount} mapped, ${lines.length - mappedCount} review needed).`,
+    message: `Prepared ${lines.length} ${supplierLabel} items (${mappedCount} mapped, ${lines.length - mappedCount} review needed).`,
     lines,
     preparedAt: new Date().toISOString()
   };
