@@ -6,9 +6,11 @@ import { StorageType, ProductStatus, OptionalType, Weekday } from "@prisma/clien
 
 export default function ProductForm({
   action,
-  initial
+  initial,
+  supplierOptions
 }: {
   action: (prevState: { message?: string }, formData: FormData) => Promise<{ message?: string }>;
+  supplierOptions: string[];
   initial?: {
     id?: string;
     itemName?: string;
@@ -72,15 +74,35 @@ export default function ProductForm({
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-500">Suppliers</p>
         {suppliers.map((supplier, index) => (
           <div key={`${index}-${isEdit ? "edit" : "new"}`} className="flex gap-2">
-            <input
-              className="w-full rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
-              placeholder="Supplier"
-              name={isEdit ? "supplierName" : "supplierNames"}
-              value={supplier}
-              onChange={(event) => updateSupplier(index, event.target.value)}
-              required
-              disabled={isEdit}
-            />
+            {isEdit ? (
+              <>
+                <input
+                  type="hidden"
+                  name="supplierName"
+                  value={supplier}
+                />
+                <input
+                  className="w-full rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+                  value={supplier}
+                  disabled
+                />
+              </>
+            ) : (
+              <select
+                className="w-full rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+                name="supplierNames"
+                value={supplier}
+                onChange={(event) => updateSupplier(index, event.target.value)}
+                required
+              >
+                <option value="">Select supplier</option>
+                {supplierOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            )}
             {!isEdit && suppliers.length > 1 && (
               <button
                 type="button"
@@ -109,13 +131,21 @@ export default function ProductForm({
           </p>
           {extraSuppliers.map((supplier, index) => (
             <div key={`extra-${index}`} className="flex gap-2">
-              <input
+              <select
                 className="w-full rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
-                placeholder="New supplier"
                 name="extraSupplierNames"
                 value={supplier}
                 onChange={(event) => updateExtraSupplier(index, event.target.value)}
-              />
+              >
+                <option value="">Select supplier</option>
+                {supplierOptions
+                  .filter((option) => option !== (initial?.supplierName ?? ""))
+                  .map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+              </select>
               <button
                 type="button"
                 onClick={() => removeExtraSupplierField(index)}

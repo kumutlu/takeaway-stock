@@ -7,7 +7,13 @@ import { deleteProduct, updateProduct } from "../../actions";
 export default async function EditProductPage({ params }: { params: { id: string } }) {
   await requireAdmin();
 
-  const product = await prisma.product.findUnique({ where: { id: params.id } });
+  const [product, suppliers] = await Promise.all([
+    prisma.product.findUnique({ where: { id: params.id } }),
+    prisma.supplier.findMany({
+      orderBy: { name: "asc" },
+      select: { name: true }
+    })
+  ]);
   if (!product) notFound();
 
   return (
@@ -19,6 +25,7 @@ export default async function EditProductPage({ params }: { params: { id: string
       <div className="rounded-2xl bg-white/80 p-6 shadow-soft">
         <ProductForm
           action={updateProduct}
+          supplierOptions={suppliers.map((supplier) => supplier.name)}
           initial={{
             id: product.id,
             itemName: product.itemName,
