@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { FormFeedback } from "@/components/form-feedback";
 import { StorageType, ProductStatus, OptionalType, Weekday } from "@prisma/client";
 
@@ -22,6 +25,21 @@ export default function ProductForm({
     unit?: string | null;
   };
 }) {
+  const isEdit = Boolean(initial?.id);
+  const [suppliers, setSuppliers] = useState<string[]>(
+    isEdit ? [initial?.supplierName ?? ""] : [""]
+  );
+
+  const updateSupplier = (index: number, value: string) => {
+    setSuppliers((prev) => prev.map((supplier, i) => (i === index ? value : supplier)));
+  };
+
+  const addSupplierField = () => setSuppliers((prev) => [...prev, ""]);
+
+  const removeSupplierField = (index: number) => {
+    setSuppliers((prev) => (prev.length <= 1 ? prev : prev.filter((_, i) => i !== index)));
+  };
+
   return (
     <FormFeedback action={action}>
       {initial?.id && <input type="hidden" name="id" value={initial.id} />}
@@ -35,18 +53,49 @@ export default function ProductForm({
         />
         <input
           className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
-          placeholder="Supplier"
-          name="supplierName"
-          defaultValue={initial?.supplierName ?? ""}
-          required
-        />
-        <input
-          className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
           placeholder="Brand label"
           name="brandLabel"
           defaultValue={initial?.brandLabel ?? ""}
           required
         />
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-500">Suppliers</p>
+        {suppliers.map((supplier, index) => (
+          <div key={`${index}-${isEdit ? "edit" : "new"}`} className="flex gap-2">
+            <input
+              className="w-full rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+              placeholder="Supplier"
+              name={isEdit ? "supplierName" : "supplierNames"}
+              value={supplier}
+              onChange={(event) => updateSupplier(index, event.target.value)}
+              required
+              disabled={isEdit}
+            />
+            {!isEdit && suppliers.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeSupplierField(index)}
+                className="rounded-xl border border-ink-200 px-3 py-2 text-xs text-ink-600"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+        ))}
+        {!isEdit && (
+          <button
+            type="button"
+            onClick={addSupplierField}
+            className="rounded-full border border-ink-200 bg-white/90 px-4 py-2 text-xs font-semibold text-ink-700 shadow-ring"
+          >
+            Add supplier
+          </button>
+        )}
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2">
         <input
           className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
           placeholder="Unit (kg, packs, ... )"

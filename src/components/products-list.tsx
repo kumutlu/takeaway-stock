@@ -68,6 +68,12 @@ export default function ProductsList({
           >
             New product
           </Link>
+          <Link
+            href="/products/suppliers"
+            className="w-full rounded-full border border-ink-200 bg-white/90 px-4 py-3 text-sm font-semibold text-ink-700 shadow-ring sm:w-auto"
+          >
+            Manage suppliers
+          </Link>
         </div>
       </div>
 

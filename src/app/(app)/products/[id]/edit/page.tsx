@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import ProductForm from "@/components/product-form";
-import { updateProduct } from "../../actions";
+import { deleteProduct, updateProduct } from "../../actions";
 
 export default async function EditProductPage({ params }: { params: { id: string } }) {
   await requireAdmin();
@@ -35,6 +35,15 @@ export default async function EditProductPage({ params }: { params: { id: string
             unit: product.unit
           }}
         />
+        <form action={deleteProduct} className="mt-4 pt-4 border-t border-ink-100">
+          <input type="hidden" name="id" value={product.id} />
+          <button
+            type="submit"
+            className="rounded-full border border-red-200 px-4 py-2 text-sm font-semibold text-red-600"
+          >
+            Delete product
+          </button>
+        </form>
       </div>
     </section>
   );
