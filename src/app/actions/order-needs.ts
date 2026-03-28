@@ -22,6 +22,22 @@ const qtySchema = z.object({
   neededQty: z.coerce.number().int().min(0)
 });
 
+async function getLinkedProductsByProductId(productId: string) {
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    select: { itemName: true }
+  });
+  if (!product) return [];
+
+  return prisma.product.findMany({
+    where: {
+      isActive: true,
+      itemName: product.itemName
+    },
+    select: { id: true }
+  });
+}
+
 export async function createOrderNeed(prevState: { message?: string }, formData: FormData) {
   const { appUser } = await requireUser();
 
@@ -36,16 +52,34 @@ export async function createOrderNeed(prevState: { message?: string }, formData:
   }
 
   const weekStart = getWeekStart();
+  const linkedProducts = await getLinkedProductsByProductId(parsed.data.productId);
 
-  await prisma.orderNeed.create({
-    data: {
-      productId: parsed.data.productId,
-      userId: appUser.id,
-      weekStart,
-      neededQty: parsed.data.neededQty,
-      notes: parsed.data.notes ?? null
+  for (const linked of linkedProducts) {
+    const existing = await prisma.orderNeed.findFirst({
+      where: { productId: linked.id, weekStart }
+    });
+
+    if (!existing) {
+      await prisma.orderNeed.create({
+        data: {
+          productId: linked.id,
+          userId: appUser.id,
+          weekStart,
+          neededQty: parsed.data.neededQty,
+          notes: parsed.data.notes ?? null
+        }
+      });
+    } else {
+      await prisma.orderNeed.update({
+        where: { id: existing.id },
+        data: {
+          neededQty: parsed.data.neededQty,
+          notes: parsed.data.notes ?? null,
+          userId: appUser.id
+        }
+      });
     }
-  });
+  }
 
   revalidatePath("/order-needs");
   revalidatePath("/orders");
@@ -62,24 +96,28 @@ export async function incrementOrderNeed(formData: FormData) {
   if (!parsed.success) return;
 
   const weekStart = getWeekStart();
-  const existing = await prisma.orderNeed.findFirst({
-    where: { productId: parsed.data.productId, weekStart }
-  });
+  const linkedProducts = await getLinkedProductsByProductId(parsed.data.productId);
 
-  if (!existing) {
-    await prisma.orderNeed.create({
-      data: {
-        productId: parsed.data.productId,
-        userId: appUser.id,
-        weekStart,
-        neededQty: 1
-      }
+  for (const linked of linkedProducts) {
+    const existing = await prisma.orderNeed.findFirst({
+      where: { productId: linked.id, weekStart }
     });
-  } else {
-    await prisma.orderNeed.update({
-      where: { id: existing.id },
-      data: { neededQty: { increment: 1 }, userId: appUser.id }
-    });
+
+    if (!existing) {
+      await prisma.orderNeed.create({
+        data: {
+          productId: linked.id,
+          userId: appUser.id,
+          weekStart,
+          neededQty: 1
+        }
+      });
+    } else {
+      await prisma.orderNeed.update({
+        where: { id: existing.id },
+        data: { neededQty: { increment: 1 }, userId: appUser.id }
+      });
+    }
   }
 
   revalidatePath("/order-needs");
@@ -96,28 +134,32 @@ export async function setOrderNeedQty(formData: FormData) {
   if (!parsed.success) return;
 
   const weekStart = getWeekStart();
-  const existing = await prisma.orderNeed.findFirst({
-    where: { productId: parsed.data.productId, weekStart }
-  });
+  const linkedProducts = await getLinkedProductsByProductId(parsed.data.productId);
 
-  if (parsed.data.neededQty <= 0) {
-    if (existing) {
-      await prisma.orderNeed.delete({ where: { id: existing.id } });
-    }
-  } else if (!existing) {
-    await prisma.orderNeed.create({
-      data: {
-        productId: parsed.data.productId,
-        userId: appUser.id,
-        weekStart,
-        neededQty: parsed.data.neededQty
+  for (const linked of linkedProducts) {
+    const existing = await prisma.orderNeed.findFirst({
+      where: { productId: linked.id, weekStart }
+    });
+
+    if (parsed.data.neededQty <= 0) {
+      if (existing) {
+        await prisma.orderNeed.delete({ where: { id: existing.id } });
       }
-    });
-  } else {
-    await prisma.orderNeed.update({
-      where: { id: existing.id },
-      data: { neededQty: parsed.data.neededQty, userId: appUser.id }
-    });
+    } else if (!existing) {
+      await prisma.orderNeed.create({
+        data: {
+          productId: linked.id,
+          userId: appUser.id,
+          weekStart,
+          neededQty: parsed.data.neededQty
+        }
+      });
+    } else {
+      await prisma.orderNeed.update({
+        where: { id: existing.id },
+        data: { neededQty: parsed.data.neededQty, userId: appUser.id }
+      });
+    }
   }
 
   revalidatePath("/order-needs");
@@ -133,8 +175,13 @@ export async function removeOrderNeed(formData: FormData) {
   if (!parsed.success) return;
 
   const weekStart = getWeekStart();
+  const linkedProducts = await getLinkedProductsByProductId(parsed.data.productId);
+
   await prisma.orderNeed.deleteMany({
-    where: { productId: parsed.data.productId, weekStart }
+    where: {
+      productId: { in: linkedProducts.map((linked) => linked.id) },
+      weekStart
+    }
   });
 
   revalidatePath("/order-needs");
@@ -147,7 +194,18 @@ export async function markOrderNeedDone(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   if (!id) return;
 
-  await prisma.orderNeed.delete({ where: { id } });
+  const current = await prisma.orderNeed.findUnique({
+    where: { id },
+    include: { product: { select: { itemName: true } } }
+  });
+  if (!current) return;
+
+  await prisma.orderNeed.deleteMany({
+    where: {
+      weekStart: current.weekStart,
+      product: { itemName: current.product.itemName }
+    }
+  });
 
   revalidatePath("/orders");
   revalidatePath("/order-needs");

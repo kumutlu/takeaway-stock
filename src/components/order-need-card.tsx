@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import { Trash2 } from "lucide-react";
+import { Star, Trash2 } from "lucide-react";
 import {
   setOrderNeedQty,
   removeOrderNeed
@@ -45,7 +45,9 @@ function useBeep() {
 
 export default function OrderNeedCard({
   product,
-  initialQty
+  initialQty,
+  isFavorite = false,
+  onToggleFavorite
 }: {
   product: {
     id: string;
@@ -54,6 +56,8 @@ export default function OrderNeedCard({
     orderDay: string | null;
   };
   initialQty: number;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
 }) {
   const [isPending, startTransition] = useTransition();
   const [localQty, setLocalQty] = useState(initialQty);
@@ -80,7 +84,17 @@ export default function OrderNeedCard({
     <div className="rounded-2xl border border-ink-100 bg-white/85 p-4 shadow-soft sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-base font-semibold text-ink-900">{product.itemName}</p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              onClick={onToggleFavorite}
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-ink-200 bg-white/90 text-ink-500 transition hover:text-amber-500"
+            >
+              <Star size={14} className={isFavorite ? "fill-amber-400 text-amber-500" : ""} />
+            </button>
+            <p className="text-base font-semibold text-ink-900">{product.itemName}</p>
+          </div>
           <p className="text-sm text-ink-500">{product.supplierName}</p>
         </div>
         <span className="rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-sm font-semibold text-ink-900">
