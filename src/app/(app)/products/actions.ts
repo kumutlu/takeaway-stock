@@ -176,9 +176,62 @@ export async function updateProduct(
     }
   });
 
+  const extraSupplierNames = Array.from(
+    new Set(
+      formData
+        .getAll("extraSupplierNames")
+        .map((value) => String(value).trim())
+        .filter(Boolean)
+    )
+  ).filter((name) => name !== parsed.data.supplierName);
+
+  for (const extraSupplierName of extraSupplierNames) {
+    const existing = await prisma.product.findFirst({
+      where: {
+        itemName: parsed.data.itemName,
+        supplierName: extraSupplierName
+      }
+    });
+    if (existing) continue;
+
+    const extraSupplier = await prisma.supplier.upsert({
+      where: { name: extraSupplierName },
+      update: {},
+      create: { name: extraSupplierName }
+    });
+
+    await prisma.product.create({
+      data: {
+        supplierId: extraSupplier.id,
+        supplierName: extraSupplierName,
+        brandId: brand.id,
+        brandLabel: parsed.data.brandLabel,
+        brandTags: parseBrandTags(parsed.data.brandLabel),
+        itemName: parsed.data.itemName,
+        storage: parsed.data.storage,
+        status: parsed.data.status,
+        optionalNote: parsed.data.optionalNote,
+        orderDay: parsed.data.orderDay ? (parsed.data.orderDay as Weekday) : null,
+        inventoryCheckDay: parsed.data.inventoryCheckDay
+          ? (parsed.data.inventoryCheckDay as Weekday)
+          : null,
+        minimumOrder: parsed.data.minimumOrder ?? 0,
+        parLevel: parsed.data.parLevel ?? 0,
+        currentStock: parsed.data.currentStock ?? 0,
+        unit: parsed.data.unit ?? null,
+        isActive: parsed.data.status === "ACTIVE"
+      }
+    });
+  }
+
   revalidatePath(`/products/${id}`);
   revalidatePath("/products");
-  return { message: "Product updated." };
+  return {
+    message:
+      extraSupplierNames.length > 0
+        ? `Product updated and added to ${extraSupplierNames.length} new supplier(s).`
+        : "Product updated."
+  };
 }
 
 export async function createSupplier(prevState: { message?: string }, formData: FormData) {

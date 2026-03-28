@@ -29,6 +29,7 @@ export default function ProductForm({
   const [suppliers, setSuppliers] = useState<string[]>(
     isEdit ? [initial?.supplierName ?? ""] : [""]
   );
+  const [extraSuppliers, setExtraSuppliers] = useState<string[]>([]);
 
   const updateSupplier = (index: number, value: string) => {
     setSuppliers((prev) => prev.map((supplier, i) => (i === index ? value : supplier)));
@@ -38,6 +39,13 @@ export default function ProductForm({
 
   const removeSupplierField = (index: number) => {
     setSuppliers((prev) => (prev.length <= 1 ? prev : prev.filter((_, i) => i !== index)));
+  };
+  const updateExtraSupplier = (index: number, value: string) => {
+    setExtraSuppliers((prev) => prev.map((supplier, i) => (i === index ? value : supplier)));
+  };
+  const addExtraSupplierField = () => setExtraSuppliers((prev) => [...prev, ""]);
+  const removeExtraSupplierField = (index: number) => {
+    setExtraSuppliers((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -94,6 +102,38 @@ export default function ProductForm({
           </button>
         )}
       </div>
+      {isEdit && (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-500">
+            Add extra suppliers
+          </p>
+          {extraSuppliers.map((supplier, index) => (
+            <div key={`extra-${index}`} className="flex gap-2">
+              <input
+                className="w-full rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+                placeholder="New supplier"
+                name="extraSupplierNames"
+                value={supplier}
+                onChange={(event) => updateExtraSupplier(index, event.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => removeExtraSupplierField(index)}
+                className="rounded-xl border border-ink-200 px-3 py-2 text-xs text-ink-600"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addExtraSupplierField}
+            className="rounded-full border border-ink-200 bg-white/90 px-4 py-2 text-xs font-semibold text-ink-700 shadow-ring"
+          >
+            Add supplier
+          </button>
+        </div>
+      )}
 
       <div className="grid gap-3 md:grid-cols-2">
         <input
