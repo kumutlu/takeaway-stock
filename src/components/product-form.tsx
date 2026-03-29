@@ -9,7 +9,10 @@ export default function ProductForm({
   initial,
   supplierOptions
 }: {
-  action: (prevState: { message?: string }, formData: FormData) => Promise<{ message?: string }>;
+  action: (
+    prevState: { message?: string; success?: boolean },
+    formData: FormData
+  ) => Promise<{ message?: string; success?: boolean }>;
   supplierOptions: string[];
   initial?: {
     id?: string;
@@ -51,7 +54,15 @@ export default function ProductForm({
   };
 
   return (
-    <FormFeedback action={action}>
+    <FormFeedback
+      action={action}
+      resetOnSuccess={!isEdit}
+      onSuccess={() => {
+        if (isEdit) return;
+        setSuppliers([""]);
+        setExtraSuppliers([]);
+      }}
+    >
       {initial?.id && <input type="hidden" name="id" value={initial.id} />}
       <div className="grid gap-3 md:grid-cols-2">
         <input

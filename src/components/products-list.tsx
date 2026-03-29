@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import ProductDeleteButton from "@/components/product-delete-button";
 
 type ProductItem = {
   id: string;
@@ -100,9 +101,12 @@ export default function ProductsList({
                 {product.currentStock ?? 0} / {product.parLevel ?? 0} {product.unit ?? ""}
               </span>
               <span className="text-ink-500">{product.status}</span>
-              <Link className="text-xs text-ink-500" href={`/products/${product.id}/edit`}>
-                Edit
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link className="text-xs text-ink-500" href={`/products/${product.id}/edit`}>
+                  Edit
+                </Link>
+                <ProductDeleteButton productId={product.id} />
+              </div>
             </div>
           ))}
         </div>
@@ -116,9 +120,12 @@ export default function ProductsList({
                 <p className="text-sm font-semibold text-ink-900">{product.itemName}</p>
                 <p className="text-xs text-ink-500">{product.brandLabel}</p>
               </div>
-              <Link className="text-xs text-ink-500" href={`/products/${product.id}/edit`}>
-                Edit
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link className="text-xs text-ink-500" href={`/products/${product.id}/edit`}>
+                  Edit
+                </Link>
+                <ProductDeleteButton productId={product.id} />
+              </div>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-ink-500">
               <div>Supplier: {product.supplierName}</div>
@@ -136,14 +143,14 @@ export default function ProductsList({
         </span>
         <div className="flex gap-2">
           {page > 1 && (
-            <Link className="rounded-full border border-ink-200 px-3 py-1" href={getPageHref(page - 1)}>
+            <a className="rounded-full border border-ink-200 px-3 py-1" href={getPageHref(page - 1)}>
               Previous
-            </Link>
+            </a>
           )}
           {page < totalPages && (
-            <Link className="rounded-full border border-ink-200 px-3 py-1" href={getPageHref(page + 1)}>
+            <a className="rounded-full border border-ink-200 px-3 py-1" href={getPageHref(page + 1)}>
               Next
-            </Link>
+            </a>
           )}
         </div>
       </div>

@@ -41,7 +41,10 @@ async function upsertSupplierBrand(input: { supplierName: string; brandLabel: st
   return { supplier, brand };
 }
 
-export async function createProduct(prevState: { message?: string }, formData: FormData) {
+export async function createProduct(
+  prevState: { message?: string; success?: boolean },
+  formData: FormData
+) {
   await requireAdmin();
 
   const supplierNames = Array.from(
@@ -53,7 +56,7 @@ export async function createProduct(prevState: { message?: string }, formData: F
     )
   );
   if (!supplierNames.length) {
-    return { message: "Please add at least one supplier." };
+    return { message: "Please add at least one supplier.", success: false };
   }
 
   const parsed = productSchema.safeParse({
@@ -72,7 +75,7 @@ export async function createProduct(prevState: { message?: string }, formData: F
   });
 
   if (!parsed.success) {
-    return { message: "Please fill in required fields." };
+    return { message: "Please fill in required fields.", success: false };
   }
 
   const brand = await prisma.brand.upsert({
@@ -113,7 +116,7 @@ export async function createProduct(prevState: { message?: string }, formData: F
   }
 
   revalidatePath("/products");
-  return { message: `Product added for ${supplierNames.length} supplier(s).` };
+  return { message: `Product added for ${supplierNames.length} supplier(s).`, success: true };
 }
 
 export async function updateProduct(
@@ -283,4 +286,20 @@ export async function deleteProduct(formData: FormData) {
   revalidatePath("/order-needs");
   revalidatePath("/orders");
   redirect("/products");
+}
+
+export async function deleteProductInline(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  await prisma.orderNeed.deleteMany({ where: { productId: id } });
+  await prisma.stockMovement.deleteMany({ where: { productId: id } });
+  await prisma.inventoryCheck.deleteMany({ where: { productId: id } });
+  await prisma.orderSuggestion.deleteMany({ where: { productId: id } });
+  await prisma.product.delete({ where: { id } });
+
+  revalidatePath("/products");
+  revalidatePath("/order-needs");
+  revalidatePath("/orders");
 }
