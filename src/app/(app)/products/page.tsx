@@ -57,6 +57,14 @@ export default async function ProductsPage({
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const baseParams = new URLSearchParams();
+  if (query) baseParams.set("q", query);
+  if (brand) baseParams.set("brand", brand);
+  if (supplier) baseParams.set("supplier", supplier);
+  if (storage) baseParams.set("storage", storage);
+  if (status) baseParams.set("status", status);
+  if (optional) baseParams.set("optional", optional);
+  if (orderDay) baseParams.set("orderDay", orderDay);
 
   return (
     <section className="space-y-6">
@@ -122,8 +130,10 @@ export default async function ProductsPage({
           unit: product.unit,
           status: product.status
         }))}
+        query={query}
         page={page}
         totalPages={totalPages}
+        baseQuery={baseParams.toString()}
       />
     </section>
   );

@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import Link from "next/link";
 
 type ProductItem = {
@@ -17,25 +16,21 @@ type ProductItem = {
 
 export default function ProductsList({
   products,
+  query,
   page,
-  totalPages
+  totalPages,
+  baseQuery
 }: {
   products: ProductItem[];
+  query: string;
   page: number;
   totalPages: number;
+  baseQuery: string;
 }) {
-  const [query, setQuery] = useState("");
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return products;
-    return products.filter((product) => {
-      const name = product.itemName.toLowerCase();
-      const supplier = (product.supplierName ?? "").toLowerCase();
-      const brand = (product.brandLabel ?? "").toLowerCase();
-      return name.includes(q) || supplier.includes(q) || brand.includes(q);
-    });
-  }, [products, query]);
+  const getPageHref = (nextPage: number) => {
+    const joiner = baseQuery ? "&" : "";
+    return `/products?${baseQuery}${joiner}page=${nextPage}`;
+  };
 
   return (
     <>
@@ -45,23 +40,28 @@ export default function ProductsList({
           <p className="text-sm text-ink-500">Filter, sort, and update quickly.</p>
         </div>
         <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:flex-nowrap">
-          <div className="flex w-full gap-2 sm:w-auto">
+          <form action="/products" method="get" className="flex w-full gap-2 sm:w-auto">
             <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              name="q"
+              defaultValue={query}
               className="w-full rounded-full border border-ink-200 bg-white/90 px-4 py-3 text-sm shadow-ring sm:w-64"
               placeholder="Search products"
             />
+            <button
+              type="submit"
+              className="rounded-full border border-ink-200 bg-white/90 px-4 py-2 text-xs text-ink-600 shadow-ring"
+            >
+              Search
+            </button>
             {query && (
-              <button
-                type="button"
-                onClick={() => setQuery("")}
+              <Link
+                href="/products"
                 className="rounded-full border border-ink-200 bg-white/90 px-4 py-2 text-xs text-ink-600 shadow-ring"
               >
                 Clear
-              </button>
+              </Link>
             )}
-          </div>
+          </form>
           <Link
             href="/products/new"
             className="w-full rounded-full border border-ink-200 bg-white/90 px-4 py-3 text-sm font-semibold text-ink-700 shadow-ring sm:w-auto"
@@ -88,7 +88,7 @@ export default function ProductsList({
           <span>Action</span>
         </div>
         <div className="divide-y divide-ink-100">
-          {filtered.map((product) => (
+          {products.map((product) => (
             <div key={product.id} className="grid grid-cols-8 gap-2 px-6 py-4 text-sm text-ink-700">
               <Link className="col-span-2 font-semibold text-ink-900" href={`/products/${product.id}`}>
                 {product.itemName}
@@ -109,7 +109,7 @@ export default function ProductsList({
       </div>
 
       <div className="grid gap-4 lg:hidden">
-        {filtered.map((product) => (
+        {products.map((product) => (
           <div key={product.id} className="rounded-2xl border border-ink-100 bg-white/90 p-4 shadow-soft">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -136,12 +136,12 @@ export default function ProductsList({
         </span>
         <div className="flex gap-2">
           {page > 1 && (
-            <Link className="rounded-full border border-ink-200 px-3 py-1" href={`/products?page=${page - 1}`}>
+            <Link className="rounded-full border border-ink-200 px-3 py-1" href={getPageHref(page - 1)}>
               Previous
             </Link>
           )}
           {page < totalPages && (
-            <Link className="rounded-full border border-ink-200 px-3 py-1" href={`/products?page=${page + 1}`}>
+            <Link className="rounded-full border border-ink-200 px-3 py-1" href={getPageHref(page + 1)}>
               Next
             </Link>
           )}
