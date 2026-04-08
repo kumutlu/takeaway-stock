@@ -54,6 +54,8 @@ export default function OrderNeedCard({
     itemName: string;
     supplierName: string | null;
     orderDay: string | null;
+    requiredStock: number | null;
+    unit: string | null;
   };
   initialQty: number;
   isFavorite?: boolean;
@@ -103,6 +105,10 @@ export default function OrderNeedCard({
       </div>
       <div className="mt-3 text-sm text-ink-500">
         <div>Order day: {product.orderDay ?? "-"}</div>
+        <div>
+          Required stock:{" "}
+          {product.requiredStock == null ? "-" : `${product.requiredStock}${product.unit ? ` ${product.unit}` : ""}`}
+        </div>
       </div>
       <div className="mt-4 grid grid-cols-[auto,1fr,auto] items-center gap-2 sm:flex sm:flex-wrap sm:items-center">
         <button

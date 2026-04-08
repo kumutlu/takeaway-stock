@@ -237,10 +237,10 @@ export default function ProductForm({
         />
         <input
           className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
-          placeholder="Par level"
+          placeholder="Required stock level (optional)"
           name="parLevel"
           type="number"
-          defaultValue={initial?.parLevel ?? 0}
+          defaultValue={initial?.parLevel ?? ""}
         />
         <input
           className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"

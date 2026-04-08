@@ -54,6 +54,8 @@ export default function OrderNeedRow({
     itemName: string;
     supplierName: string | null;
     orderDay: string | null;
+    requiredStock: number | null;
+    unit: string | null;
   };
   initialQty: number;
   isFavorite?: boolean;
@@ -94,7 +96,15 @@ export default function OrderNeedRow({
         <span className="font-semibold text-ink-900">{product.itemName}</span>
       </div>
       <span className="text-ink-600">{product.supplierName}</span>
-      <span className="text-ink-600">{product.orderDay ?? "-"}</span>
+      <span className="text-ink-600">
+        {product.orderDay ?? "-"}
+        <span className="ml-2 text-ink-400">
+          / Required:{" "}
+          {product.requiredStock == null
+            ? "-"
+            : `${product.requiredStock}${product.unit ? ` ${product.unit}` : ""}`}
+        </span>
+      </span>
       <span className="font-semibold text-ink-900">{localQty}</span>
       <div className="flex flex-wrap items-center gap-2">
         <button

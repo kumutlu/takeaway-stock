@@ -79,7 +79,9 @@ export default async function OrderNeedsPage({
           id: product.id,
           itemName: product.itemName,
           supplierName: product.supplierName,
-          orderDay: product.orderDay
+          orderDay: product.orderDay,
+          requiredStock: product.parLevel,
+          unit: product.unit
         }))}
         needs={needLookup}
       />

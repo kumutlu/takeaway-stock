@@ -9,6 +9,8 @@ type ProductItem = {
   itemName: string;
   supplierName: string | null;
   orderDay: string | null;
+  requiredStock: number | null;
+  unit: string | null;
 };
 
 export default function OrderNeedsList({
@@ -135,7 +137,9 @@ export default function OrderNeedsList({
                   id: product.id,
                   itemName: product.itemName,
                   supplierName: product.supplierName,
-                  orderDay: product.orderDay
+                  orderDay: product.orderDay,
+                  requiredStock: product.requiredStock,
+                  unit: product.unit
                 }}
                 initialQty={qty}
                 isFavorite={favoriteSet.has(product.itemName.toLowerCase())}
@@ -156,7 +160,9 @@ export default function OrderNeedsList({
                 id: product.id,
                 itemName: product.itemName,
                 supplierName: product.supplierName,
-                orderDay: product.orderDay
+                orderDay: product.orderDay,
+                requiredStock: product.requiredStock,
+                unit: product.unit
               }}
               initialQty={qty}
               isFavorite={favoriteSet.has(product.itemName.toLowerCase())}

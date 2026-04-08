@@ -8,6 +8,11 @@ import { requireAdmin } from "@/lib/auth";
 import { parseBrandTags } from "@/lib/product-utils";
 import { StorageType, ProductStatus, OptionalType, Weekday } from "@prisma/client";
 
+const optionalInt = z.preprocess(
+  (value) => (value === "" || value === null ? undefined : value),
+  z.coerce.number().int().min(0).optional()
+);
+
 const productSchema = z.object({
   itemName: z.string().min(2),
   supplierName: z.string().min(2).optional(),
@@ -18,7 +23,7 @@ const productSchema = z.object({
   orderDay: z.nativeEnum(Weekday).optional().or(z.literal("")),
   inventoryCheckDay: z.nativeEnum(Weekday).optional().or(z.literal("")),
   minimumOrder: z.coerce.number().int().min(0).optional(),
-  parLevel: z.coerce.number().int().min(0).optional(),
+  parLevel: optionalInt,
   currentStock: z.coerce.number().int().min(0).optional(),
   unit: z.string().optional()
 });
@@ -107,7 +112,7 @@ export async function createProduct(
           ? (parsed.data.inventoryCheckDay as Weekday)
           : null,
         minimumOrder: parsed.data.minimumOrder ?? 0,
-        parLevel: parsed.data.parLevel ?? 0,
+        parLevel: parsed.data.parLevel ?? null,
         currentStock: parsed.data.currentStock ?? 0,
         unit: parsed.data.unit ?? null,
         isActive: parsed.data.status === "ACTIVE"
@@ -172,7 +177,7 @@ export async function updateProduct(
         ? (parsed.data.inventoryCheckDay as Weekday)
         : null,
       minimumOrder: parsed.data.minimumOrder ?? 0,
-      parLevel: parsed.data.parLevel ?? 0,
+      parLevel: parsed.data.parLevel ?? null,
       currentStock: parsed.data.currentStock ?? 0,
       unit: parsed.data.unit ?? null,
       isActive: parsed.data.status === "ACTIVE"
@@ -219,7 +224,7 @@ export async function updateProduct(
           ? (parsed.data.inventoryCheckDay as Weekday)
           : null,
         minimumOrder: parsed.data.minimumOrder ?? 0,
-        parLevel: parsed.data.parLevel ?? 0,
+        parLevel: parsed.data.parLevel ?? null,
         currentStock: parsed.data.currentStock ?? 0,
         unit: parsed.data.unit ?? null,
         isActive: parsed.data.status === "ACTIVE"
