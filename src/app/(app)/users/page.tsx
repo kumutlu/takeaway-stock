@@ -1,10 +1,10 @@
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { FormFeedback } from "@/components/form-feedback";
-import { approveUser, createUser, toggleUserActive, updateUserRole } from "./actions";
+import { approveUser, blockUser, createUser, removeUser, updateUserRole } from "./actions";
 
 export default async function UsersPage() {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
   const users = await prisma.user.findMany({ orderBy: { createdAt: "desc" } });
 
   return (
@@ -83,13 +83,22 @@ export default async function UsersPage() {
                     </button>
                   </form>
                 )}
-                <form action={toggleUserActive}>
-                  <input type="hidden" name="userId" value={user.id} />
-                  <input type="hidden" name="isActive" value={String(user.isActive)} />
-                  <button className="rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-xs text-ink-600 shadow-ring">
-                    {user.isActive ? "Deactivate" : "Pause"}
-                  </button>
-                </form>
+                {user.id !== appUser.id && (
+                  <>
+                    <form action={blockUser}>
+                      <input type="hidden" name="userId" value={user.id} />
+                      <button className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+                        Block user
+                      </button>
+                    </form>
+                    <form action={removeUser}>
+                      <input type="hidden" name="userId" value={user.id} />
+                      <button className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold text-red-700">
+                        Remove user
+                      </button>
+                    </form>
+                  </>
+                )}
               </div>
             </div>
           ))}
@@ -127,13 +136,22 @@ export default async function UsersPage() {
                 </form>
               )}
             </div>
-            <form action={toggleUserActive} className="mt-3">
-              <input type="hidden" name="userId" value={user.id} />
-              <input type="hidden" name="isActive" value={String(user.isActive)} />
-              <button className="rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-xs text-ink-600 shadow-ring">
-                {user.isActive ? "Deactivate" : "Pause"}
-              </button>
-            </form>
+            {user.id !== appUser.id && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                <form action={blockUser}>
+                  <input type="hidden" name="userId" value={user.id} />
+                  <button className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+                    Block user
+                  </button>
+                </form>
+                <form action={removeUser}>
+                  <input type="hidden" name="userId" value={user.id} />
+                  <button className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold text-red-700">
+                    Remove user
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
         ))}
       </div>

@@ -60,6 +60,54 @@ export async function toggleUserActive(formData: FormData) {
   revalidatePath("/users");
 }
 
+export async function blockUser(formData: FormData) {
+  await requireAdmin();
+
+  const userId = String(formData.get("userId") ?? "");
+  if (!userId) return;
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { isActive: false }
+  });
+
+  revalidatePath("/users");
+}
+
+export async function removeUser(formData: FormData) {
+  await requireAdmin();
+
+  const userId = String(formData.get("userId") ?? "");
+  if (!userId) return;
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) return;
+
+  await prisma.stockMovement.updateMany({
+    where: { userId },
+    data: { userId: null }
+  });
+  await prisma.orderNeed.updateMany({
+    where: { userId },
+    data: { userId: null }
+  });
+  await prisma.pushSubscription.updateMany({
+    where: { userId },
+    data: { userId: null }
+  });
+  await prisma.auditLog.updateMany({
+    where: { userId },
+    data: { userId: null }
+  });
+
+  await prisma.user.delete({ where: { id: userId } });
+
+  const supabaseAdmin = createSupabaseAdminClient();
+  await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => null);
+
+  revalidatePath("/users");
+}
+
 export async function approveUser(formData: FormData) {
   await requireAdmin();
 
