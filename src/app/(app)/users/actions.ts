@@ -16,11 +16,6 @@ export async function createUser(prevState: { message?: string }, formData: Form
     return { message: "Email and password are required." };
   }
 
-  const totalUsers = await prisma.user.count();
-  if (totalUsers >= 4) {
-    return { message: "Maximum 4 users allowed." };
-  }
-
   const supabaseAdmin = createSupabaseAdminClient();
   const { data, error } = await supabaseAdmin.auth.admin.createUser({
     email,
@@ -60,6 +55,35 @@ export async function toggleUserActive(formData: FormData) {
   await prisma.user.update({
     where: { id: userId },
     data: { isActive: !isActive }
+  });
+
+  revalidatePath("/users");
+}
+
+export async function approveUser(formData: FormData) {
+  await requireAdmin();
+
+  const userId = String(formData.get("userId") ?? "");
+  if (!userId) return;
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { isActive: true }
+  });
+
+  revalidatePath("/users");
+}
+
+export async function updateUserRole(formData: FormData) {
+  await requireAdmin();
+
+  const userId = String(formData.get("userId") ?? "");
+  const role = String(formData.get("role") ?? "STAFF").toUpperCase();
+  if (!userId) return;
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { role: role === "ADMIN" ? "ADMIN" : "STAFF" }
   });
 
   revalidatePath("/users");

@@ -16,16 +16,21 @@ export async function signInWithPassword(formData: FormData) {
   }
 
   if (data.user?.email) {
-    const existing = await prisma.user.findUnique({ where: { email: data.user.email } });
+    let existing = await prisma.user.findUnique({ where: { email: data.user.email } });
     if (!existing) {
-      await prisma.user.create({
+      existing = await prisma.user.create({
         data: {
           id: data.user.id,
           email: data.user.email,
           role: "STAFF",
-          isActive: true
+          isActive: false
         }
       });
+    }
+
+    if (!existing.isActive) {
+      await supabase.auth.signOut();
+      redirect(`/sign-in?message=${encodeURIComponent("Your account is pending admin approval.")}`);
     }
   }
 
@@ -44,6 +49,15 @@ export async function signUpWithPassword(formData: FormData) {
   if (error) {
     redirect(`/sign-up?error=${encodeURIComponent(error.message)}`);
   }
+  await prisma.user.upsert({
+    where: { email },
+    update: { isActive: false, role: "STAFF" },
+    create: {
+      email,
+      role: "STAFF",
+      isActive: false
+    }
+  });
   redirect(`/sign-in?message=${encodeURIComponent("Check your email to confirm your account.")}`);
 }
 

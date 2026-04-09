@@ -14,19 +14,21 @@ export async function requireUser() {
     redirect("/sign-in");
   }
 
-  const user = await prisma.user.upsert({
-    where: { email },
-    update: {},
-    create: {
-      id: data.user.id,
-      email,
-      role: "STAFF",
-      isActive: true
-    }
-  });
+  let user = await prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        id: data.user.id,
+        email,
+        role: "STAFF",
+        isActive: false
+      }
+    });
+  }
 
   if (!user.isActive) {
-    redirect("/sign-in");
+    await supabase.auth.signOut();
+    redirect("/sign-in?message=Your account is pending admin approval.");
   }
 
   return { authUser: data.user, appUser: user };
