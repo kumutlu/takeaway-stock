@@ -22,13 +22,15 @@ function SaveProductButton() {
 export default function ProductForm({
   action,
   initial,
-  supplierOptions
+  supplierOptions,
+  existingSupplierNames = []
 }: {
   action: (
     prevState: { message?: string; success?: boolean },
     formData: FormData
   ) => Promise<{ message?: string; success?: boolean }>;
   supplierOptions: string[];
+  existingSupplierNames?: string[];
   initial?: {
     id?: string;
     itemName?: string;
@@ -90,6 +92,18 @@ export default function ProductForm({
 
       <div className="space-y-2">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-500">Suppliers</p>
+        {isEdit && existingSupplierNames.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-ink-100 bg-ink-50 px-3 py-2">
+            {existingSupplierNames.map((name) => (
+              <span
+                key={name}
+                className="rounded-full border border-ink-200 bg-white px-3 py-1 text-xs font-medium text-ink-700"
+              >
+                {name}
+              </span>
+            ))}
+          </div>
+        )}
         {suppliers.map((supplier, index) => (
           <div key={`${index}-${isEdit ? "edit" : "new"}`} className="flex gap-2">
             {isEdit ? (
@@ -157,7 +171,12 @@ export default function ProductForm({
               >
                 <option value="">Select supplier</option>
                 {supplierOptions
-                  .filter((option) => option !== (initial?.supplierName ?? ""))
+                  .filter(
+                    (option) =>
+                      !existingSupplierNames.some(
+                        (existing) => existing.toLowerCase() === option.toLowerCase()
+                      )
+                  )
                   .map((option) => (
                     <option key={option} value={option}>
                       {option}

@@ -46,19 +46,75 @@ export default async function ProductsPage({
     ]
   };
 
-  const [total, products, brands, suppliers] = await Promise.all([
-    prisma.product.count({ where }),
+  const [products, brands, suppliers] = await Promise.all([
     prisma.product.findMany({
       where,
       orderBy: { itemName: "asc" },
-      take: PAGE_SIZE,
-      skip: (page - 1) * PAGE_SIZE
+      select: {
+        id: true,
+        itemName: true,
+        brandLabel: true,
+        supplierName: true,
+        storage: true,
+        currentStock: true,
+        parLevel: true,
+        unit: true,
+        status: true
+      }
     }),
     prisma.product.findMany({ distinct: ["brandLabel"], select: { brandLabel: true } }),
     prisma.product.findMany({ distinct: ["supplierName"], select: { supplierName: true } })
   ]);
 
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const groupedMap = new Map<
+    string,
+    {
+      id: string;
+      itemName: string;
+      brandLabel: string | null;
+      supplierNames: string[];
+      storage: string;
+      currentStock: number;
+      parLevel: number | null;
+      unit: string | null;
+      status: string;
+    }
+  >();
+
+  for (const product of products) {
+    const key = `${product.itemName.toLowerCase()}::${(product.brandLabel ?? "").toLowerCase()}::${(product.unit ?? "").toLowerCase()}`;
+    const existing = groupedMap.get(key);
+    if (existing) {
+      if (product.supplierName && !existing.supplierNames.includes(product.supplierName)) {
+        existing.supplierNames.push(product.supplierName);
+      }
+      existing.currentStock += product.currentStock ?? 0;
+      if (existing.parLevel != null && product.parLevel != null) {
+        existing.parLevel += product.parLevel;
+      } else if (existing.parLevel == null && product.parLevel != null) {
+        existing.parLevel = product.parLevel;
+      }
+      continue;
+    }
+    groupedMap.set(key, {
+      id: product.id,
+      itemName: product.itemName,
+      brandLabel: product.brandLabel,
+      supplierNames: product.supplierName ? [product.supplierName] : [],
+      storage: product.storage,
+      currentStock: product.currentStock ?? 0,
+      parLevel: product.parLevel,
+      unit: product.unit,
+      status: product.status
+    });
+  }
+
+  const groupedProducts = Array.from(groupedMap.values()).sort((a, b) =>
+    a.itemName.localeCompare(b.itemName)
+  );
+
+  const totalPages = Math.max(1, Math.ceil(groupedProducts.length / PAGE_SIZE));
+  const pagedProducts = groupedProducts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const baseParams = new URLSearchParams();
   if (query) baseParams.set("q", query);
   if (brand) baseParams.set("brand", brand);
@@ -126,17 +182,7 @@ export default async function ProductsPage({
       </form>
 
       <ProductsList
-        products={products.map((product) => ({
-          id: product.id,
-          itemName: product.itemName,
-          brandLabel: product.brandLabel,
-          supplierName: product.supplierName,
-          storage: product.storage,
-          currentStock: product.currentStock,
-          parLevel: product.parLevel,
-          unit: product.unit,
-          status: product.status
-        }))}
+        products={pagedProducts}
         query={query}
         page={page}
         totalPages={totalPages}

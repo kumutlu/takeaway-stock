@@ -7,7 +7,7 @@ type ProductItem = {
   id: string;
   itemName: string;
   brandLabel: string | null;
-  supplierName: string | null;
+  supplierNames: string[];
   storage: string;
   currentStock: number | null;
   parLevel: number | null;
@@ -95,7 +95,7 @@ export default function ProductsList({
                 {product.itemName}
               </Link>
               <span>{product.brandLabel}</span>
-              <span>{product.supplierName}</span>
+              <span>{product.supplierNames.join(", ")}</span>
               <span>{product.storage.replace("_", "-")}</span>
               <span>
                 {product.currentStock ?? 0} / {product.parLevel ?? 0} {product.unit ?? ""}
@@ -128,7 +128,7 @@ export default function ProductsList({
               </div>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-ink-500">
-              <div>Supplier: {product.supplierName}</div>
+              <div>Suppliers: {product.supplierNames.join(", ")}</div>
               <div>Storage: {product.storage.replace("_", "-")}</div>
               <div>Stock: {product.currentStock ?? 0}</div>
               <div>Status: {product.status}</div>

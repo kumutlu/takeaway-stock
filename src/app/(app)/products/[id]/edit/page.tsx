@@ -16,6 +16,19 @@ export default async function EditProductPage({ params }: { params: { id: string
   ]);
   if (!product) notFound();
 
+  const relatedProducts = await prisma.product.findMany({
+    where: {
+      itemName: product.itemName,
+      brandLabel: product.brandLabel,
+      unit: product.unit
+    },
+    select: { supplierName: true },
+    orderBy: { supplierName: "asc" }
+  });
+  const existingSupplierNames = Array.from(
+    new Set(relatedProducts.map((item) => item.supplierName).filter(Boolean))
+  );
+
   return (
     <section className="space-y-6">
       <div>
@@ -26,6 +39,7 @@ export default async function EditProductPage({ params }: { params: { id: string
         <ProductForm
           action={updateProduct}
           supplierOptions={suppliers.map((supplier) => supplier.name)}
+          existingSupplierNames={existingSupplierNames}
           initial={{
             id: product.id,
             itemName: product.itemName,
