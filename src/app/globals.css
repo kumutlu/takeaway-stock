@@ -19,6 +19,7 @@ body {
 }
 
 .dark body {
+  color-scheme: dark;
   background: radial-gradient(circle at 10% 10%, rgba(91, 124, 204, 0.2), transparent 42%),
     radial-gradient(circle at 85% 20%, rgba(168, 126, 77, 0.18), transparent 40%),
     #0f141d;
@@ -221,11 +222,59 @@ body {
     @apply border-sand-400 bg-sand-500 text-ink-900;
   }
 
-  .dark .bg-white\/95,
-  .dark .bg-white\/90,
-  .dark .bg-white\/85,
-  .dark .bg-white\/80,
-  .dark .bg-white\/70 {
-    background-color: rgb(31 41 55 / 0.85);
-  }
+}
+
+.dark [class~="text-ink-900"] {
+  color: #f4f5f7 !important;
+}
+
+.dark [class~="text-ink-800"] {
+  color: #e6e9ee !important;
+}
+
+.dark [class~="text-ink-700"] {
+  color: #c7ceda !important;
+}
+
+.dark [class~="text-ink-600"],
+.dark [class~="text-ink-500"],
+.dark [class~="text-ink-400"] {
+  color: #a2adbf !important;
+}
+
+.dark [class~="bg-white/95"] {
+  background-color: rgb(23 30 40 / 0.95) !important;
+}
+
+.dark [class~="bg-white/90"] {
+  background-color: rgb(23 30 40 / 0.9) !important;
+}
+
+.dark [class~="bg-white/85"] {
+  background-color: rgb(23 30 40 / 0.85) !important;
+}
+
+.dark [class~="bg-white/80"] {
+  background-color: rgb(23 30 40 / 0.8) !important;
+}
+
+.dark [class~="bg-white/70"] {
+  background-color: rgb(23 30 40 / 0.7) !important;
+}
+
+.dark [class~="border-ink-100"],
+.dark [class~="border-ink-200"] {
+  border-color: rgba(162, 173, 191, 0.24) !important;
+}
+
+.dark [class~="border-ink-300"] {
+  border-color: rgba(162, 173, 191, 0.38) !important;
+}
+
+.dark [class~="bg-ink-900"] {
+  background-color: #111827 !important;
+}
+
+.dark [class~="bg-ink-900/95"] {
+  background-color: rgb(17 24 39 / 0.95) !important;
 }
