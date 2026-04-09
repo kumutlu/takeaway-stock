@@ -23,9 +23,9 @@ export default function AppShell({
       : baseNavItems;
 
   return (
-    <div className="min-h-screen bg-transparent">
+    <div className="min-h-screen bg-transparent dark:text-ink-100">
       <div className="flex min-h-screen">
-        <aside className="hidden w-64 flex-col border-r border-ink-100 bg-white/80 p-6 backdrop-blur-xl lg:flex">
+        <aside className="hidden w-64 flex-col border-r border-ink-100 bg-white/80 p-6 backdrop-blur-xl dark:border-ink-700 dark:bg-ink-900/80 lg:flex">
           <Link
             href="/dashboard"
             className="ui-focus rounded-2xl border border-white/40 bg-ink-900/95 px-4 py-3 text-white shadow-soft transition duration-200 hover:-translate-y-[1px]"
@@ -47,14 +47,14 @@ export default function AppShell({
           </nav>
         </aside>
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="border-b border-ink-100 bg-white/80 px-4 py-4 backdrop-blur-xl md:px-6">
+          <header className="border-b border-ink-100 bg-white/80 px-4 py-4 backdrop-blur-xl dark:border-ink-700 dark:bg-ink-900/80 md:px-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs tracking-[0.2em] text-ink-400">Live Orders</p>
                 <p className="text-lg font-semibold text-ink-900">Order Overview</p>
               </div>
               <div className="flex items-center gap-3">
-                <div className="hidden rounded-full bg-ink-900 px-3 py-1 text-xs font-semibold text-white md:block shadow-ring">
+                <div className="hidden rounded-full bg-ink-900 px-3 py-1 text-xs font-semibold text-white md:block shadow-ring dark:bg-sand-500 dark:text-ink-900">
                   {role === "ADMIN" ? "Admin" : "Staff"}
                 </div>
                 <UserMenu />

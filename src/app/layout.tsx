@@ -30,7 +30,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${spaceGrotesk.variable}`}>
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${spaceGrotesk.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var stored = localStorage.getItem('theme');
+                  var dark = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  document.documentElement.classList.toggle('dark', dark);
+                } catch (_) {}
+              })();
+            `
+          }}
+        />
+      </head>
       <body className="min-h-screen font-[var(--font-body)] text-ink-900">
         {children}
       </body>
