@@ -15,6 +15,8 @@ export default async function ProductsPage({
   searchParams: Record<string, string | string[] | undefined>;
 }) {
   const query = getParam(searchParams, "q");
+  const saved = getParam(searchParams, "saved");
+  const count = Number(getParam(searchParams, "count") || "1");
   const brand = getParam(searchParams, "brand");
   const supplier = getParam(searchParams, "supplier");
   const storage = getParam(searchParams, "storage");
@@ -68,6 +70,11 @@ export default async function ProductsPage({
 
   return (
     <section className="space-y-6">
+      {saved === "1" && (
+        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
+          Product saved successfully{count > 1 ? ` for ${count} suppliers` : ""}.
+        </p>
+      )}
       <form className="grid gap-3 md:grid-cols-6" action="/products" method="get">
         <select name="brand" className="rounded-2xl border border-ink-200 bg-white/90 px-3 py-2 text-sm shadow-ring">
           <option value="">Brand</option>

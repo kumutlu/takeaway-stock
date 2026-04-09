@@ -3,6 +3,21 @@
 import { useState } from "react";
 import { FormFeedback } from "@/components/form-feedback";
 import { StorageType, ProductStatus, OptionalType, Weekday } from "@prisma/client";
+import { useFormStatus } from "react-dom";
+
+function SaveProductButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="rounded-full bg-ink-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-70"
+    >
+      {pending ? "Saving..." : "Save product"}
+    </button>
+  );
+}
 
 export default function ProductForm({
   action,
@@ -54,15 +69,7 @@ export default function ProductForm({
   };
 
   return (
-    <FormFeedback
-      action={action}
-      resetOnSuccess={!isEdit}
-      onSuccess={() => {
-        if (isEdit) return;
-        setSuppliers([""]);
-        setExtraSuppliers([]);
-      }}
-    >
+    <FormFeedback action={action}>
       {initial?.id && <input type="hidden" name="id" value={initial.id} />}
       <div className="grid gap-3 md:grid-cols-2">
         <input
@@ -267,9 +274,7 @@ export default function ProductForm({
       </div>
 
       <div className="pt-2">
-        <button className="rounded-full bg-ink-900 px-4 py-2 text-sm font-semibold text-white">
-          Save product
-        </button>
+        <SaveProductButton />
       </div>
     </FormFeedback>
   );

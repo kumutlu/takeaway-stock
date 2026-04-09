@@ -121,7 +121,7 @@ export async function createProduct(
   }
 
   revalidatePath("/products");
-  return { message: `Product added for ${supplierNames.length} supplier(s).`, success: true };
+  redirect(`/products?saved=1&count=${supplierNames.length}`);
 }
 
 export async function updateProduct(
