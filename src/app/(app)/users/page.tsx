@@ -3,12 +3,26 @@ import { prisma } from "@/lib/db";
 import { FormFeedback } from "@/components/form-feedback";
 import { approveUser, blockUser, createUser, removeUser, updateUserRole } from "./actions";
 
-export default async function UsersPage() {
+export default async function UsersPage({
+  searchParams
+}: {
+  searchParams: Record<string, string | string[] | undefined>;
+}) {
   const { appUser } = await requireAdmin();
   const users = await prisma.user.findMany({ orderBy: { createdAt: "desc" } });
 
   return (
     <section className="space-y-6">
+      {typeof searchParams?.message === "string" && (
+        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
+          {searchParams.message}
+        </p>
+      )}
+      {typeof searchParams?.error === "string" && (
+        <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700">
+          {searchParams.error}
+        </p>
+      )}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-ink-900">Users</h1>

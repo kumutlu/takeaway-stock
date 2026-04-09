@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -75,37 +76,44 @@ export async function blockUser(formData: FormData) {
 }
 
 export async function removeUser(formData: FormData) {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
 
   const userId = String(formData.get("userId") ?? "");
-  if (!userId) return;
+  if (!userId) redirect("/users?error=Invalid+user");
+  if (userId === appUser.id) redirect("/users?error=You+cannot+remove+your+own+account");
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user) return;
+  try {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) redirect("/users?error=User+not+found");
 
-  await prisma.stockMovement.updateMany({
-    where: { userId },
-    data: { userId: null }
-  });
-  await prisma.orderNeed.updateMany({
-    where: { userId },
-    data: { userId: null }
-  });
-  await prisma.pushSubscription.updateMany({
-    where: { userId },
-    data: { userId: null }
-  });
-  await prisma.auditLog.updateMany({
-    where: { userId },
-    data: { userId: null }
-  });
+    await prisma.$transaction([
+      prisma.stockMovement.updateMany({
+        where: { userId },
+        data: { userId: null }
+      }),
+      prisma.orderNeed.updateMany({
+        where: { userId },
+        data: { userId: null }
+      }),
+      prisma.pushSubscription.updateMany({
+        where: { userId },
+        data: { userId: null }
+      }),
+      prisma.auditLog.updateMany({
+        where: { userId },
+        data: { userId: null }
+      }),
+      prisma.user.delete({ where: { id: userId } })
+    ]);
 
-  await prisma.user.delete({ where: { id: userId } });
+    const supabaseAdmin = createSupabaseAdminClient();
+    await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => null);
 
-  const supabaseAdmin = createSupabaseAdminClient();
-  await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => null);
-
-  revalidatePath("/users");
+    revalidatePath("/users");
+    redirect("/users?message=User+removed");
+  } catch {
+    redirect("/users?error=Could+not+remove+user");
+  }
 }
 
 export async function approveUser(formData: FormData) {
