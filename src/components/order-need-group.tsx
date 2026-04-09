@@ -59,7 +59,7 @@ export default function OrderNeedGroup({
   const orderUrl = getSupplierOrderUrl(supplier);
 
   return (
-    <div className="rounded-2xl border border-ink-100 bg-white/90 p-5 shadow-soft">
+    <div className="ui-card p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-sm font-semibold text-ink-900">{supplier}</h2>
@@ -72,7 +72,7 @@ export default function OrderNeedGroup({
               href={orderUrl}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full border border-ink-200 px-3 py-1 text-xs font-semibold text-ink-700 transition hover:border-ink-300 hover:text-ink-900"
+              className="ui-btn ui-focus px-3 py-1 text-xs"
             >
               Open supplier site
             </a>
@@ -87,7 +87,7 @@ export default function OrderNeedGroup({
                   return markSupplierDone(buildFormData(supplier));
                 })
               }
-              className="rounded-full bg-ink-900 px-3 py-1 text-xs font-semibold text-white shadow-soft transition active:translate-y-[1px]"
+              className="ui-btn ui-btn-primary ui-focus px-3 py-1 text-xs"
             >
               Mark all done
             </button>

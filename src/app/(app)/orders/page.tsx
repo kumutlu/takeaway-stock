@@ -51,7 +51,7 @@ export default async function OrdersPage() {
           />
         ))}
         {!needs.length && (
-          <div className="rounded-2xl border border-ink-100 bg-white/90 p-5 text-sm text-ink-500 shadow-ring">
+          <div className="ui-card p-5 text-sm text-ink-500">
             No order needs logged for this week.
           </div>
         )}

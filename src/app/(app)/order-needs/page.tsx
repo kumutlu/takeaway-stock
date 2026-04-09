@@ -42,7 +42,7 @@ export default async function OrderNeedsPage({
         </div>
         <a
           href="/orders"
-          className="w-full rounded-full border border-ink-900 bg-ink-900 px-4 py-2 text-center text-xs font-semibold text-white shadow-soft sm:w-auto"
+          className="ui-btn ui-btn-primary ui-focus w-full text-center text-xs sm:w-auto"
         >
           Finish & View Orders
         </a>
@@ -51,10 +51,10 @@ export default async function OrderNeedsPage({
       <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
         <a
           href="/order-needs"
-          className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition min-h-[44px] flex items-center ${
+          className={`ui-focus ui-chip ${
             supplierFilter
-              ? "border-ink-200 bg-white/80 text-ink-600 hover:border-ink-300"
-              : "border-ink-900 bg-ink-900 text-white"
+              ? ""
+              : "ui-chip-active"
           }`}
         >
           All suppliers
@@ -63,10 +63,10 @@ export default async function OrderNeedsPage({
           <a
             key={supplier.supplierName}
             href={`/order-needs?supplier=${encodeURIComponent(supplier.supplierName ?? "")}`}
-            className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition min-h-[44px] flex items-center ${
+            className={`ui-focus ui-chip ${
               supplierFilter === supplier.supplierName
-                ? "border-ink-900 bg-ink-900 text-white"
-                : "border-ink-200 bg-white/80 text-ink-600 hover:border-ink-300"
+                ? "ui-chip-active"
+                : ""
             }`}
           >
             {supplier.supplierName}

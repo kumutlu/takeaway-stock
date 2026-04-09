@@ -13,7 +13,7 @@ function DeleteSubmitButton() {
       disabled={pending}
       aria-label="Delete product"
       title="Delete product"
-      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-red-200 text-red-500 transition hover:bg-red-50 disabled:opacity-60"
+      className="ui-icon-btn ui-focus h-8 w-8 border-red-200 text-red-500 hover:border-red-300 hover:bg-red-50 hover:text-red-700"
     >
       <Trash2 size={14} />
     </button>

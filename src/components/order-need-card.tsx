@@ -83,7 +83,7 @@ export default function OrderNeedCard({
   };
 
   return (
-    <div className="rounded-2xl border border-ink-100 bg-white/85 p-4 shadow-soft sm:p-5">
+    <div className="ui-card ui-card-hover p-4 sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
@@ -91,7 +91,7 @@ export default function OrderNeedCard({
               type="button"
               aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
               onClick={onToggleFavorite}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-ink-200 bg-white/90 text-ink-500 transition hover:text-amber-500"
+              className="ui-icon-btn ui-focus h-8 w-8 text-ink-500 hover:text-amber-500"
             >
               <Star size={14} className={isFavorite ? "fill-amber-400 text-amber-500" : ""} />
             </button>
@@ -99,7 +99,7 @@ export default function OrderNeedCard({
           </div>
           <p className="text-sm text-ink-500">{product.supplierName}</p>
         </div>
-        <span className="rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-sm font-semibold text-ink-900">
+        <span className="rounded-full border border-ink-200 bg-white/95 px-3 py-1 text-sm font-semibold text-ink-900 shadow-ring">
           Qty {localQty}
         </span>
       </div>
@@ -113,7 +113,7 @@ export default function OrderNeedCard({
       <div className="mt-4 grid grid-cols-[auto,1fr,auto] items-center gap-2 sm:flex sm:flex-wrap sm:items-center">
         <button
           type="button"
-          className="h-11 rounded-full border border-ink-900 bg-ink-900 px-5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-[1px] active:translate-y-0"
+          className="ui-btn ui-btn-primary ui-focus h-11 px-5 text-sm"
           onClick={() =>
             (() => {
             playBeep();
@@ -131,7 +131,7 @@ export default function OrderNeedCard({
           name="neededQty"
           aria-label="Needed quantity"
           value={localQty}
-          className="h-11 rounded-full border border-ink-200 bg-white/90 px-3 text-sm text-ink-700 shadow-sm"
+          className="ui-input ui-focus h-11 rounded-full px-3 text-sm shadow-sm"
           disabled={isPending}
           onChange={(event) => {
             const value = Number(event.target.value);
@@ -148,7 +148,7 @@ export default function OrderNeedCard({
         <button
           type="button"
           aria-label="Reset quantity"
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-ink-200 bg-white/80 text-ink-500 transition hover:border-ink-300 hover:text-ink-700 cursor-pointer"
+          className="ui-icon-btn ui-focus h-11 w-11 cursor-pointer"
           onClick={() => {
             setLocalQty(0);
             scheduleFlush(0);

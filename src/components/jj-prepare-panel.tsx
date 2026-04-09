@@ -40,13 +40,13 @@ export default function JjPreparePanel({ supplier }: { supplier: string }) {
             setResult(response as PreparedState);
           })
         }
-              className="rounded-full border border-ink-200 px-3 py-1 text-xs font-semibold text-ink-700 transition hover:border-ink-300 hover:text-ink-900 disabled:opacity-60"
+        className="ui-btn ui-focus px-3 py-1 text-xs disabled:opacity-60"
       >
         {isPending ? "Preparing..." : "Prepare JJ cart"}
       </button>
 
       {result && (
-        <div className="rounded-xl border border-ink-100 bg-ink-50 p-3 text-xs text-ink-700">
+        <div className="rounded-xl border border-ink-100 bg-ink-50 p-3 text-xs text-ink-700 shadow-ring">
           <p className={result.ok ? "text-ink-700" : "text-red-600"}>{result.message}</p>
           {!!result.lines?.length && (
             <div className="mt-2 max-h-48 space-y-2 overflow-auto">
@@ -65,7 +65,7 @@ export default function JjPreparePanel({ supplier }: { supplier: string }) {
                     href={line.searchUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="rounded-full border border-ink-200 px-2 py-1 text-[11px] font-semibold text-ink-700 transition hover:border-ink-300 hover:text-ink-900"
+                    className="ui-btn ui-focus px-2 py-1 text-[11px]"
                   >
                     Search
                   </a>

@@ -17,7 +17,7 @@ export default function UserMenu() {
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="h-10 w-10 rounded-full bg-sand-200"
+        className="ui-focus h-10 w-10 rounded-full border border-sand-300 bg-sand-200 transition duration-200 hover:border-sand-400 hover:bg-sand-300 active:scale-[0.98]"
         aria-label="User menu"
       />
       {open && (
@@ -25,7 +25,7 @@ export default function UserMenu() {
           <button
             type="button"
             onClick={signOut}
-            className="w-full rounded-lg px-3 py-2 text-left text-ink-700 hover:bg-ink-50"
+            className="ui-focus w-full rounded-lg px-3 py-2 text-left text-ink-700 transition duration-200 hover:bg-ink-50 active:scale-[0.99]"
           >
             Sign out
           </button>

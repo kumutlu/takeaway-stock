@@ -87,12 +87,12 @@ export default function OrderNeedsList({
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search items or suppliers"
-          className="w-full rounded-full border border-ink-200 bg-white/90 px-4 py-3 text-sm shadow-ring"
+          className="ui-input rounded-full py-3"
         />
         <select
           value={sortBy}
           onChange={(event) => setSortBy(event.target.value as "supplier" | "name")}
-          className="min-h-[44px] rounded-full border border-ink-200 bg-white/90 px-4 py-2 text-sm text-ink-700 shadow-ring"
+          className="ui-input ui-focus min-h-[44px] w-auto rounded-full py-2"
         >
           <option value="supplier">Sort: Supplier</option>
           <option value="name">Sort: Product Name</option>
@@ -100,10 +100,10 @@ export default function OrderNeedsList({
         <button
           type="button"
           onClick={() => setFavoritesOnly((prev) => !prev)}
-          className={`min-h-[44px] rounded-full border px-4 py-2 text-sm shadow-ring ${
+          className={`ui-focus min-h-[44px] rounded-full border px-4 py-2 text-sm transition duration-200 ${
             favoritesOnly
-              ? "border-amber-300 bg-amber-50 text-amber-700"
-              : "border-ink-200 bg-white/90 text-ink-600"
+              ? "border-amber-300 bg-amber-50 text-amber-700 shadow-soft"
+              : "border-ink-200 bg-white/90 text-ink-600 shadow-ring hover:border-ink-300 hover:bg-white hover:text-ink-900"
           }`}
         >
           Favorites only
@@ -112,14 +112,14 @@ export default function OrderNeedsList({
           <button
             type="button"
             onClick={() => setQuery("")}
-            className="rounded-full border border-ink-200 bg-white/90 px-4 py-2 text-xs text-ink-600 shadow-ring"
+            className="ui-btn ui-focus text-xs"
           >
             Clear
           </button>
         )}
       </div>
 
-      <div className="hidden rounded-2xl border border-ink-100 bg-white/90 shadow-soft lg:block">
+      <div className="ui-card hidden lg:block">
         <div className="grid grid-cols-6 gap-2 border-b border-ink-100 px-6 py-3 text-xs uppercase tracking-[0.18em] text-ink-400">
           <span className="col-span-2">Item</span>
           <span>Supplier</span>

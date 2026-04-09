@@ -12,7 +12,7 @@ function SaveProductButton() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded-full bg-ink-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-70"
+      className="ui-btn ui-btn-primary ui-focus disabled:opacity-70"
     >
       {pending ? "Saving..." : "Save product"}
     </button>
@@ -73,14 +73,14 @@ export default function ProductForm({
       {initial?.id && <input type="hidden" name="id" value={initial.id} />}
       <div className="grid gap-3 md:grid-cols-2">
         <input
-          className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+          className="ui-input"
           placeholder="Item name"
           name="itemName"
           defaultValue={initial?.itemName ?? ""}
           required
         />
         <input
-          className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+          className="ui-input"
           placeholder="Brand label"
           name="brandLabel"
           defaultValue={initial?.brandLabel ?? ""}
@@ -100,14 +100,14 @@ export default function ProductForm({
                   value={supplier}
                 />
                 <input
-                  className="w-full rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+                  className="w-full ui-input"
                   value={supplier}
                   disabled
                 />
               </>
             ) : (
               <select
-                className="w-full rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+                className="w-full ui-input"
                 name="supplierNames"
                 value={supplier}
                 onChange={(event) => updateSupplier(index, event.target.value)}
@@ -125,7 +125,7 @@ export default function ProductForm({
               <button
                 type="button"
                 onClick={() => removeSupplierField(index)}
-                className="rounded-xl border border-ink-200 px-3 py-2 text-xs text-ink-600"
+                className="ui-btn ui-focus px-3 py-2 text-xs"
               >
                 Remove
               </button>
@@ -136,7 +136,7 @@ export default function ProductForm({
           <button
             type="button"
             onClick={addSupplierField}
-            className="rounded-full border border-ink-200 bg-white/90 px-4 py-2 text-xs font-semibold text-ink-700 shadow-ring"
+            className="ui-btn ui-focus text-xs"
           >
             Add supplier
           </button>
@@ -150,7 +150,7 @@ export default function ProductForm({
           {extraSuppliers.map((supplier, index) => (
             <div key={`extra-${index}`} className="flex gap-2">
               <select
-                className="w-full rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+                className="w-full ui-input"
                 name="extraSupplierNames"
                 value={supplier}
                 onChange={(event) => updateExtraSupplier(index, event.target.value)}
@@ -167,7 +167,7 @@ export default function ProductForm({
               <button
                 type="button"
                 onClick={() => removeExtraSupplierField(index)}
-                className="rounded-xl border border-ink-200 px-3 py-2 text-xs text-ink-600"
+                className="ui-btn ui-focus px-3 py-2 text-xs"
               >
                 Remove
               </button>
@@ -176,7 +176,7 @@ export default function ProductForm({
           <button
             type="button"
             onClick={addExtraSupplierField}
-            className="rounded-full border border-ink-200 bg-white/90 px-4 py-2 text-xs font-semibold text-ink-700 shadow-ring"
+            className="ui-btn ui-focus text-xs"
           >
             Add supplier
           </button>
@@ -185,7 +185,7 @@ export default function ProductForm({
 
       <div className="grid gap-3 md:grid-cols-2">
         <input
-          className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+          className="ui-input"
           placeholder="Unit (kg, packs, ... )"
           name="unit"
           defaultValue={initial?.unit ?? ""}
@@ -194,7 +194,7 @@ export default function ProductForm({
 
       <div className="grid gap-3 md:grid-cols-4">
         <select
-          className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+          className="ui-input"
           name="storage"
           defaultValue={initial?.storage ?? "AMBIENT"}
         >
@@ -204,7 +204,7 @@ export default function ProductForm({
           <option value="FROZEN_DEFROST">Frozen-Defrost</option>
         </select>
         <select
-          className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+          className="ui-input"
           name="status"
           defaultValue={initial?.status ?? "ACTIVE"}
         >
@@ -213,7 +213,7 @@ export default function ProductForm({
           <option value="DISCONTINUED">Discontinued</option>
         </select>
         <select
-          className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+          className="ui-input"
           name="optionalNote"
           defaultValue={initial?.optionalNote ?? "CORE"}
         >
@@ -221,7 +221,7 @@ export default function ProductForm({
           <option value="OPTIONAL">Optional</option>
         </select>
         <select
-          className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+          className="ui-input"
           name="orderDay"
           defaultValue={initial?.orderDay ?? ""}
         >
@@ -236,21 +236,21 @@ export default function ProductForm({
 
       <div className="grid gap-3 md:grid-cols-3">
         <input
-          className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+          className="ui-input"
           placeholder="Minimum order"
           name="minimumOrder"
           type="number"
           defaultValue={initial?.minimumOrder ?? 0}
         />
         <input
-          className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+          className="ui-input"
           placeholder="Required stock level (optional)"
           name="parLevel"
           type="number"
           defaultValue={initial?.parLevel ?? ""}
         />
         <input
-          className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+          className="ui-input"
           placeholder="Current stock"
           name="currentStock"
           type="number"
@@ -260,7 +260,7 @@ export default function ProductForm({
 
       <div className="grid gap-3 md:grid-cols-2">
         <select
-          className="rounded-xl border border-ink-200 bg-white/90 px-4 py-2 text-sm shadow-ring"
+          className="ui-input"
           name="inventoryCheckDay"
           defaultValue={initial?.inventoryCheckDay ?? ""}
         >

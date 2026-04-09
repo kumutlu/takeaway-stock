@@ -76,7 +76,7 @@ export default async function ProductsPage({
         </p>
       )}
       <form className="grid gap-3 md:grid-cols-6" action="/products" method="get">
-        <select name="brand" className="rounded-2xl border border-ink-200 bg-white/90 px-3 py-2 text-sm shadow-ring">
+        <select name="brand" className="ui-input ui-focus rounded-2xl px-3 py-2">
           <option value="">Brand</option>
           {brands.map((item) => (
             <option key={item.brandLabel} value={item.brandLabel ?? ""}>
@@ -84,7 +84,7 @@ export default async function ProductsPage({
             </option>
           ))}
         </select>
-        <select name="supplier" className="rounded-2xl border border-ink-200 bg-white/90 px-3 py-2 text-sm shadow-ring">
+        <select name="supplier" className="ui-input ui-focus rounded-2xl px-3 py-2">
           <option value="">Supplier</option>
           {suppliers.map((item) => (
             <option key={item.supplierName} value={item.supplierName ?? ""}>
@@ -92,25 +92,25 @@ export default async function ProductsPage({
             </option>
           ))}
         </select>
-        <select name="storage" className="rounded-2xl border border-ink-200 bg-white/90 px-3 py-2 text-sm shadow-ring">
+        <select name="storage" className="ui-input ui-focus rounded-2xl px-3 py-2">
           <option value="">Storage</option>
           <option value="AMBIENT">Ambient</option>
           <option value="FRIDGE">Fridge</option>
           <option value="FROZEN">Frozen</option>
           <option value="FROZEN_DEFROST">Frozen-Defrost</option>
         </select>
-        <select name="status" className="rounded-2xl border border-ink-200 bg-white/90 px-3 py-2 text-sm shadow-ring">
+        <select name="status" className="ui-input ui-focus rounded-2xl px-3 py-2">
           <option value="">Status</option>
           <option value="ACTIVE">Active</option>
           <option value="INACTIVE">Inactive</option>
           <option value="DISCONTINUED">Discontinued</option>
         </select>
-        <select name="optional" className="rounded-2xl border border-ink-200 bg-white/90 px-3 py-2 text-sm shadow-ring">
+        <select name="optional" className="ui-input ui-focus rounded-2xl px-3 py-2">
           <option value="">Optional/Core</option>
           <option value="CORE">Core</option>
           <option value="OPTIONAL">Optional</option>
         </select>
-        <select name="orderDay" className="rounded-2xl border border-ink-200 bg-white/90 px-3 py-2 text-sm shadow-ring">
+        <select name="orderDay" className="ui-input ui-focus rounded-2xl px-3 py-2">
           <option value="">Order Day</option>
           <option value="MONDAY">Monday</option>
           <option value="TUESDAY">Tuesday</option>
@@ -120,7 +120,7 @@ export default async function ProductsPage({
           <option value="SATURDAY">Saturday</option>
           <option value="SUNDAY">Sunday</option>
         </select>
-        <button className="rounded-full bg-ink-900 px-4 py-2 text-sm font-semibold text-white shadow-soft md:col-span-6">
+        <button className="ui-btn ui-btn-primary ui-focus md:col-span-6">
           Apply filters
         </button>
       </form>

@@ -31,16 +31,16 @@ export default function SignInPage({
         <SignInForm action={signInWithPassword} error={error} />
 
         <div className="mt-3 flex items-center justify-between text-xs text-ink-500">
-          <Link className="hover:text-ink-700" href="/forgot-password">
+          <Link className="ui-focus transition-colors duration-200 hover:text-ink-700" href="/forgot-password">
             Forgot password?
           </Link>
-          <Link className="hover:text-ink-700" href="/sign-up">
+          <Link className="ui-focus transition-colors duration-200 hover:text-ink-700" href="/sign-up">
             Create account
           </Link>
         </div>
 
         <form action={signInWithGoogle} className="mt-6">
-          <button className="w-full rounded-full border border-ink-200 bg-white px-4 py-3 text-sm font-semibold text-ink-700 shadow-ring">
+          <button className="ui-btn ui-focus w-full py-3 text-sm">
             Continue with Google
           </button>
         </form>

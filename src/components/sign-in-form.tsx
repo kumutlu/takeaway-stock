@@ -56,7 +56,7 @@ export default function SignInForm({
       onInput={() => scheduleAutoSubmit(true)}
     >
       <input
-        className="w-full rounded-xl border border-ink-200 bg-white/90 px-4 py-3 text-sm shadow-ring"
+        className="ui-input py-3"
         placeholder="Email"
         type="email"
         name="email"
@@ -64,14 +64,14 @@ export default function SignInForm({
         autoComplete="email"
       />
       <input
-        className="w-full rounded-xl border border-ink-200 bg-white/90 px-4 py-3 text-sm shadow-ring"
+        className="ui-input py-3"
         placeholder="Password"
         type="password"
         name="password"
         required
         autoComplete="current-password"
       />
-      <button className="w-full rounded-full bg-ink-900 px-4 py-3 text-sm font-semibold text-white shadow-soft">
+      <button className="ui-btn ui-btn-primary ui-focus w-full py-3 text-sm">
         Sign in
       </button>
     </form>

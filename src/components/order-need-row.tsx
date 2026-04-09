@@ -89,7 +89,7 @@ export default function OrderNeedRow({
           type="button"
           aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
           onClick={onToggleFavorite}
-          className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-ink-200 bg-white/90 text-ink-500 transition hover:text-amber-500"
+          className="ui-icon-btn ui-focus h-7 w-7 text-ink-500 hover:text-amber-500"
         >
           <Star size={14} className={isFavorite ? "fill-amber-400 text-amber-500" : ""} />
         </button>
@@ -109,7 +109,7 @@ export default function OrderNeedRow({
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
-          className="rounded-full border border-ink-900 bg-ink-900 px-3 py-1 text-xs font-semibold text-white shadow-sm transition hover:-translate-y-[1px]"
+          className="ui-btn ui-btn-primary ui-focus px-3 py-1 text-xs"
           onClick={() =>
             (() => {
             playBeep();
@@ -127,7 +127,7 @@ export default function OrderNeedRow({
           name="neededQty"
           aria-label="Needed quantity"
           value={localQty}
-          className="rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-xs text-ink-700 shadow-sm"
+          className="ui-input ui-focus w-auto rounded-full px-3 py-1 text-xs shadow-sm"
           disabled={isPending}
           onChange={(event) => {
             const value = Number(event.target.value);
@@ -144,7 +144,7 @@ export default function OrderNeedRow({
         <button
           type="button"
           aria-label="Reset quantity"
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-ink-200 bg-white/80 text-ink-500 transition hover:border-ink-300 hover:text-ink-700"
+          className="ui-icon-btn ui-focus h-8 w-8"
           disabled={isPending}
           onClick={() =>
             startTransition(() => {

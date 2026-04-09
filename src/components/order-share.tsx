@@ -46,7 +46,7 @@ export default function OrderShare({
         href={`https://wa.me/?text=${encoded}`}
         target="_blank"
         rel="noreferrer"
-        className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-xs text-ink-600 shadow-ring"
+        className="ui-btn ui-focus px-3 py-1 text-xs"
       >
         <MessageCircle size={14} />
         WhatsApp
@@ -54,7 +54,7 @@ export default function OrderShare({
       <button
         type="button"
         onClick={copyText}
-        className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-xs text-ink-600 shadow-ring"
+        className="ui-btn ui-focus px-3 py-1 text-xs"
       >
         <Copy size={14} />
         {copied ? "Copied" : "Copy"}

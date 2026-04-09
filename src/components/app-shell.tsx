@@ -23,7 +23,7 @@ export default function AppShell({
         <aside className="hidden w-64 flex-col border-r border-ink-100 bg-white/80 p-6 backdrop-blur-xl lg:flex">
           <Link
             href="/dashboard"
-            className="rounded-2xl border border-white/40 bg-ink-900/95 px-4 py-3 text-white shadow-soft transition hover:-translate-y-[1px]"
+            className="ui-focus rounded-2xl border border-white/40 bg-ink-900/95 px-4 py-3 text-white shadow-soft transition duration-200 hover:-translate-y-[1px]"
           >
             <p className="text-[10px] uppercase tracking-[0.4em] text-ink-200">Wrap'n Bowl</p>
             <p className="mt-2 font-[var(--font-display)] text-2xl">Order Hub</p>
@@ -33,7 +33,7 @@ export default function AppShell({
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex items-center gap-3 rounded-xl px-4 py-2 text-sm font-medium text-ink-700 transition hover:bg-white/80 hover:shadow-ring"
+                className="ui-focus flex items-center gap-3 rounded-xl px-4 py-2 text-sm font-medium text-ink-700 transition duration-200 hover:bg-white hover:shadow-soft active:scale-[0.99]"
               >
                 <item.icon size={18} />
                 {item.label}
@@ -60,7 +60,7 @@ export default function AppShell({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="shrink-0 whitespace-nowrap rounded-full border border-ink-200 bg-white/95 px-4 py-2 text-sm font-semibold text-ink-700 shadow-ring min-h-[44px] flex items-center"
+                  className="ui-focus ui-chip whitespace-nowrap font-semibold"
                 >
                   {item.label}
                 </Link>

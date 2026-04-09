@@ -45,19 +45,19 @@ export default function ProductsList({
             <input
               name="q"
               defaultValue={query}
-              className="w-full rounded-full border border-ink-200 bg-white/90 px-4 py-3 text-sm shadow-ring sm:w-64"
+              className="ui-input rounded-full py-3 sm:w-64"
               placeholder="Search products"
             />
             <button
               type="submit"
-              className="rounded-full border border-ink-200 bg-white/90 px-4 py-2 text-xs text-ink-600 shadow-ring"
+              className="ui-btn ui-focus text-xs"
             >
               Search
             </button>
             {query && (
               <Link
                 href="/products"
-                className="rounded-full border border-ink-200 bg-white/90 px-4 py-2 text-xs text-ink-600 shadow-ring"
+                className="ui-btn ui-focus text-xs"
               >
                 Clear
               </Link>
@@ -65,20 +65,20 @@ export default function ProductsList({
           </form>
           <Link
             href="/products/new"
-            className="w-full rounded-full border border-ink-200 bg-white/90 px-4 py-3 text-sm font-semibold text-ink-700 shadow-ring sm:w-auto"
+            className="ui-btn ui-focus w-full py-3 sm:w-auto"
           >
             New product
           </Link>
           <Link
             href="/products/suppliers"
-            className="w-full rounded-full border border-ink-200 bg-white/90 px-4 py-3 text-sm font-semibold text-ink-700 shadow-ring sm:w-auto"
+            className="ui-btn ui-focus w-full py-3 sm:w-auto"
           >
             Manage suppliers
           </Link>
         </div>
       </div>
 
-      <div className="hidden rounded-2xl border border-ink-100 bg-white/90 shadow-soft lg:block">
+      <div className="ui-card hidden lg:block">
         <div className="grid grid-cols-8 gap-2 border-b border-ink-100 px-6 py-3 text-xs uppercase tracking-[0.2em] text-ink-400">
           <span className="col-span-2">Item</span>
           <span>Brand</span>
@@ -114,7 +114,7 @@ export default function ProductsList({
 
       <div className="grid gap-4 lg:hidden">
         {products.map((product) => (
-          <div key={product.id} className="rounded-2xl border border-ink-100 bg-white/90 p-4 shadow-soft">
+          <div key={product.id} className="ui-card ui-card-hover p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-ink-900">{product.itemName}</p>
@@ -143,12 +143,12 @@ export default function ProductsList({
         </span>
         <div className="flex gap-2">
           {page > 1 && (
-            <a className="rounded-full border border-ink-200 px-3 py-1" href={getPageHref(page - 1)}>
+            <a className="ui-btn ui-focus px-3 py-1 text-xs" href={getPageHref(page - 1)}>
               Previous
             </a>
           )}
           {page < totalPages && (
-            <a className="rounded-full border border-ink-200 px-3 py-1" href={getPageHref(page + 1)}>
+            <a className="ui-btn ui-focus px-3 py-1 text-xs" href={getPageHref(page + 1)}>
               Next
             </a>
           )}

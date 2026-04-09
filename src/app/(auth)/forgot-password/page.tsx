@@ -28,20 +28,20 @@ export default function ForgotPasswordPage({
 
         <form action={sendPasswordReset} className="mt-6 space-y-4">
           <input
-            className="w-full rounded-xl border border-ink-200 bg-white/90 px-4 py-3 text-sm shadow-ring"
+            className="ui-input py-3"
             placeholder="Email"
             type="email"
             name="email"
             required
             autoComplete="email"
           />
-          <button className="w-full rounded-full bg-ink-900 px-4 py-3 text-sm font-semibold text-white shadow-soft">
+          <button className="ui-btn ui-btn-primary ui-focus w-full py-3 text-sm">
             Send reset link
           </button>
         </form>
 
         <div className="mt-4 text-center text-xs text-ink-500">
-          <Link className="hover:text-ink-700" href="/sign-in">
+          <Link className="ui-focus transition-colors duration-200 hover:text-ink-700" href="/sign-in">
             Back to sign in
           </Link>
         </div>

@@ -21,7 +21,7 @@ export default function OrderNeedDoneButton({
   return (
     <button
       type="button"
-      className="rounded-full border border-ink-200 bg-white/90 px-3 py-1 text-xs font-semibold text-ink-700 shadow-ring transition active:translate-y-[1px]"
+      className="ui-btn ui-focus px-3 py-1 text-xs"
       disabled={isPending}
       onClick={() =>
         startTransition(() => {
