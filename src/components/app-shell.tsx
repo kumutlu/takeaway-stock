@@ -1,9 +1,9 @@
 import type { Route } from "next";
 import Link from "next/link";
-import { Package, LayoutGrid, ClipboardList, Layers } from "lucide-react";
+import { Package, LayoutGrid, ClipboardList, Layers, Users } from "lucide-react";
 import UserMenu from "@/components/user-menu";
 
-const navItems: { href: Route; label: string; icon: typeof LayoutGrid }[] = [
+const baseNavItems: { href: Route; label: string; icon: typeof LayoutGrid }[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
   { href: "/products", label: "Products", icon: Package },
   { href: "/order-needs", label: "Order Needs", icon: ClipboardList },
@@ -17,6 +17,11 @@ export default function AppShell({
   children: React.ReactNode;
   role: "ADMIN" | "STAFF";
 }) {
+  const navItems =
+    role === "ADMIN"
+      ? [...baseNavItems, { href: "/users" as Route, label: "Users", icon: Users }]
+      : baseNavItems;
+
   return (
     <div className="min-h-screen bg-transparent">
       <div className="flex min-h-screen">
