@@ -39,7 +39,7 @@ export default function AppShell({
               <Link
                 key={item.href}
                 href={item.href}
-                className="ui-focus flex items-center gap-3 rounded-xl px-4 py-2 text-sm font-medium text-ink-700 transition duration-200 hover:bg-white hover:shadow-soft active:scale-[0.99]"
+                className="ui-focus flex items-center gap-3 rounded-xl px-4 py-2 text-sm font-medium text-ink-700 transition duration-200 hover:bg-white hover:text-ink-900 hover:shadow-soft active:scale-[0.99] dark:hover:!text-ink-900"
               >
                 <item.icon size={18} />
                 {item.label}
