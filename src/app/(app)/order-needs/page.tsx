@@ -29,7 +29,46 @@ export default async function OrderNeedsPage({
   ]);
 
   const needMap = new Map(needs.map((need) => [need.productId, need]));
-  const needLookup = Object.fromEntries(needMap.entries().map(([key, need]) => [key, need.neededQty]));
+  const groupedMap = new Map<
+    string,
+    {
+      id: string;
+      itemName: string;
+      supplierNames: string[];
+      orderDay: string | null;
+      requiredStock: number | null;
+      unit: string | null;
+    }
+  >();
+
+  for (const product of products) {
+    const key = `${product.itemName.trim().toLowerCase()}::${(product.brandLabel ?? "").trim().toLowerCase()}::${(product.unit ?? "").trim().toLowerCase()}`;
+    const existing = groupedMap.get(key);
+
+    if (existing) {
+      if (product.supplierName && !existing.supplierNames.includes(product.supplierName)) {
+        existing.supplierNames.push(product.supplierName);
+      }
+      continue;
+    }
+
+    groupedMap.set(key, {
+      id: product.id,
+      itemName: product.itemName,
+      supplierNames: product.supplierName ? [product.supplierName] : [],
+      orderDay: product.orderDay,
+      requiredStock: product.parLevel,
+      unit: product.unit
+    });
+  }
+
+  const groupedProducts = Array.from(groupedMap.values()).sort((a, b) =>
+    a.itemName.localeCompare(b.itemName)
+  );
+
+  const needLookup = Object.fromEntries(
+    groupedProducts.map((product) => [product.id, needMap.get(product.id)?.neededQty ?? 0])
+  );
 
   return (
     <section className="space-y-5 sm:space-y-6">
@@ -75,14 +114,7 @@ export default async function OrderNeedsPage({
       </div>
 
       <OrderNeedsList
-        products={products.map((product) => ({
-          id: product.id,
-          itemName: product.itemName,
-          supplierName: product.supplierName,
-          orderDay: product.orderDay,
-          requiredStock: product.parLevel,
-          unit: product.unit
-        }))}
+        products={groupedProducts}
         needs={needLookup}
       />
     </section>

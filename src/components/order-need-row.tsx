@@ -52,7 +52,7 @@ export default function OrderNeedRow({
   product: {
     id: string;
     itemName: string;
-    supplierName: string | null;
+    supplierNames: string[];
     orderDay: string | null;
     requiredStock: number | null;
     unit: string | null;
@@ -95,7 +95,7 @@ export default function OrderNeedRow({
         </button>
         <span className="font-semibold text-ink-900">{product.itemName}</span>
       </div>
-      <span className="text-ink-600">{product.supplierName}</span>
+      <span className="text-ink-600">{product.supplierNames.join(", ") || "-"}</span>
       <span className="text-ink-600">
         {product.orderDay ?? "-"}
         <span className="ml-2 text-ink-400">

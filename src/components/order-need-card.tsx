@@ -52,7 +52,7 @@ export default function OrderNeedCard({
   product: {
     id: string;
     itemName: string;
-    supplierName: string | null;
+    supplierNames: string[];
     orderDay: string | null;
     requiredStock: number | null;
     unit: string | null;
@@ -97,7 +97,7 @@ export default function OrderNeedCard({
             </button>
             <p className="text-base font-semibold text-ink-900">{product.itemName}</p>
           </div>
-          <p className="text-sm text-ink-500">{product.supplierName}</p>
+          <p className="text-sm text-ink-500">{product.supplierNames.join(", ") || "-"}</p>
         </div>
         <span className="rounded-full border border-ink-200 bg-white/95 px-3 py-1 text-sm font-semibold text-ink-900 shadow-ring">
           Qty {localQty}

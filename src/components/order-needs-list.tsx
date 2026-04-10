@@ -7,7 +7,7 @@ import OrderNeedCard from "@/components/order-need-card";
 type ProductItem = {
   id: string;
   itemName: string;
-  supplierName: string | null;
+  supplierNames: string[];
   orderDay: string | null;
   requiredStock: number | null;
   unit: string | null;
@@ -62,7 +62,7 @@ export default function OrderNeedsList({
     const q = query.trim().toLowerCase();
     const searched = products.filter((product) => {
       const name = product.itemName.toLowerCase();
-      const supplier = (product.supplierName ?? "").toLowerCase();
+      const supplier = product.supplierNames.join(" ").toLowerCase();
       const searchOk = !q || name.includes(q) || supplier.includes(q);
       const favoriteOk = !favoritesOnly || favoriteSet.has(name);
       return searchOk && favoriteOk;
@@ -72,8 +72,8 @@ export default function OrderNeedsList({
       if (sortBy === "name") {
         return a.itemName.localeCompare(b.itemName);
       }
-      const supplierA = a.supplierName ?? "";
-      const supplierB = b.supplierName ?? "";
+      const supplierA = a.supplierNames[0] ?? "";
+      const supplierB = b.supplierNames[0] ?? "";
       const supplierCompare = supplierA.localeCompare(supplierB);
       if (supplierCompare !== 0) return supplierCompare;
       return a.itemName.localeCompare(b.itemName);
@@ -136,7 +136,7 @@ export default function OrderNeedsList({
                 product={{
                   id: product.id,
                   itemName: product.itemName,
-                  supplierName: product.supplierName,
+                  supplierNames: product.supplierNames,
                   orderDay: product.orderDay,
                   requiredStock: product.requiredStock,
                   unit: product.unit
@@ -159,7 +159,7 @@ export default function OrderNeedsList({
               product={{
                 id: product.id,
                 itemName: product.itemName,
-                supplierName: product.supplierName,
+                supplierNames: product.supplierNames,
                 orderDay: product.orderDay,
                 requiredStock: product.requiredStock,
                 unit: product.unit
