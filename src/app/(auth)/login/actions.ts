@@ -4,6 +4,20 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db";
 
+function mapAuthError(message: string) {
+  const text = message.toLowerCase();
+  if (text.includes("already registered") || text.includes("already been registered")) {
+    return "This email is already registered. Please sign in or reset your password.";
+  }
+  if (text.includes("invalid email")) {
+    return "Please enter a valid email address.";
+  }
+  if (text.includes("password")) {
+    return "Password is too weak. Use at least 6 characters.";
+  }
+  return "We could not create your account right now. Please try again.";
+}
+
 export async function signInWithPassword(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
@@ -38,26 +52,35 @@ export async function signInWithPassword(formData: FormData) {
 }
 
 export async function signUpWithPassword(formData: FormData) {
-  const email = String(formData.get("email") ?? "");
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
+  if (!email || !password) {
+    redirect(`/sign-up?error=${encodeURIComponent("Email and password are required.")}`);
+  }
   if (!password || password !== confirm) {
     redirect(`/sign-up?error=${encodeURIComponent("Passwords do not match")}`);
   }
-  const supabase = createSupabaseServerClient();
-  const { error } = await supabase.auth.signUp({ email, password });
-  if (error) {
-    redirect(`/sign-up?error=${encodeURIComponent(error.message)}`);
-  }
-  await prisma.user.upsert({
-    where: { email },
-    update: { isActive: false, role: "STAFF" },
-    create: {
-      email,
-      role: "STAFF",
-      isActive: false
+  try {
+    const supabase = createSupabaseServerClient();
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) {
+      redirect(`/sign-up?error=${encodeURIComponent(mapAuthError(error.message))}`);
     }
-  });
+    await prisma.user.upsert({
+      where: { email },
+      update: { isActive: false, role: "STAFF" },
+      create: {
+        email,
+        role: "STAFF",
+        isActive: false
+      }
+    });
+  } catch {
+    redirect(
+      `/sign-up?error=${encodeURIComponent("Account could not be created. Please try again in a moment.")}`
+    );
+  }
   redirect(`/sign-in?message=${encodeURIComponent("Check your email to confirm your account.")}`);
 }
 
