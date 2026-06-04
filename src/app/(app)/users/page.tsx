@@ -1,6 +1,7 @@
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { FormFeedback } from "@/components/form-feedback";
+import CopyProjectCode from "@/components/copy-project-code";
 import { approveUser, blockUser, createUser, removeUser, updateUserRole } from "./actions";
 
 export default async function UsersPage({
@@ -32,6 +33,21 @@ export default async function UsersPage({
           <p className="text-sm text-ink-500">
             Admin only · approve and manage access to {appUser.project.name}.
           </p>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-ink-100 bg-white/90 p-5 shadow-soft">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-400">Project number</p>
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="font-[var(--font-display)] text-2xl font-semibold tracking-[0.08em] text-ink-900">
+              {appUser.project.code}
+            </p>
+            <p className="mt-1 text-xs text-ink-500">
+              Share this number with people you want to invite to {appUser.project.name}.
+            </p>
+          </div>
+          <CopyProjectCode code={appUser.project.code} />
         </div>
       </div>
 
