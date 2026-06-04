@@ -23,14 +23,15 @@ export function getWeekStart(date = new Date()) {
   return d;
 }
 
-export async function getOrderSuggestions(forDay?: Weekday) {
+export async function getOrderSuggestions(projectId: string, forDay?: Weekday) {
   const day = forDay ?? getTodayWeekday();
-  const settings = await prisma.appSetting.findUnique({ where: { id: 1 } });
+  const settings = await prisma.appSetting.findUnique({ where: { projectId } });
   const useMinimumOrder = settings?.lowStockThreshold === "MINIMUM_ORDER";
 
   const products = await prisma.product.findMany({
     where: {
       isActive: true,
+      projectId,
       orderDay: day
     },
     orderBy: { supplierName: "asc" }
@@ -45,17 +46,17 @@ export async function getOrderSuggestions(forDay?: Weekday) {
   });
 }
 
-export async function getOrderNeedsForWeek(weekStart: Date) {
+export async function getOrderNeedsForWeek(projectId: string, weekStart: Date) {
   return prisma.orderNeed.findMany({
-    where: { weekStart, done: false },
+    where: { weekStart, done: false, product: { projectId } },
     include: { product: true, user: true },
     orderBy: { createdAt: "desc" }
   });
 }
 
-export async function getPendingOrderNeeds(weekStart: Date) {
+export async function getPendingOrderNeeds(projectId: string, weekStart: Date) {
   const needs = await prisma.orderNeed.findMany({
-    where: { weekStart, done: false },
+    where: { weekStart, done: false, product: { projectId } },
     include: { product: true }
   });
   return needs;

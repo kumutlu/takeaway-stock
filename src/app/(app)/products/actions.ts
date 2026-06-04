@@ -32,16 +32,16 @@ const supplierSchema = z.object({
   name: z.string().min(2)
 });
 
-async function upsertSupplierBrand(input: { supplierName: string; brandLabel: string }) {
+async function upsertSupplierBrand(input: { projectId: string; supplierName: string; brandLabel: string }) {
   const supplier = await prisma.supplier.upsert({
-    where: { name: input.supplierName },
+    where: { projectId_name: { projectId: input.projectId, name: input.supplierName } },
     update: {},
-    create: { name: input.supplierName }
+    create: { projectId: input.projectId, name: input.supplierName }
   });
   const brand = await prisma.brand.upsert({
-    where: { name: input.brandLabel },
+    where: { projectId_name: { projectId: input.projectId, name: input.brandLabel } },
     update: {},
-    create: { name: input.brandLabel }
+    create: { projectId: input.projectId, name: input.brandLabel }
   });
   return { supplier, brand };
 }
@@ -50,7 +50,7 @@ export async function createProduct(
   prevState: { message?: string; success?: boolean },
   formData: FormData
 ) {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
 
   const supplierNames = Array.from(
     new Set(
@@ -84,20 +84,21 @@ export async function createProduct(
   }
 
   const brand = await prisma.brand.upsert({
-    where: { name: parsed.data.brandLabel },
+    where: { projectId_name: { projectId: appUser.projectId, name: parsed.data.brandLabel } },
     update: {},
-    create: { name: parsed.data.brandLabel }
+    create: { projectId: appUser.projectId, name: parsed.data.brandLabel }
   });
 
   for (const supplierName of supplierNames) {
     const supplier = await prisma.supplier.upsert({
-      where: { name: supplierName },
+      where: { projectId_name: { projectId: appUser.projectId, name: supplierName } },
       update: {},
-      create: { name: supplierName }
+      create: { projectId: appUser.projectId, name: supplierName }
     });
 
     await prisma.product.create({
       data: {
+        projectId: appUser.projectId,
         supplierId: supplier.id,
         supplierName,
         brandId: brand.id,
@@ -128,7 +129,7 @@ export async function updateProduct(
   prevState: { message?: string },
   formData: FormData
 ) {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
 
   const id = String(formData.get("id") ?? "");
   if (!id) return { message: "Product not found." };
@@ -156,12 +157,13 @@ export async function updateProduct(
   }
 
   const { supplier, brand } = await upsertSupplierBrand({
+    projectId: appUser.projectId,
     supplierName: parsed.data.supplierName,
     brandLabel: parsed.data.brandLabel
   });
 
-  await prisma.product.update({
-    where: { id },
+  await prisma.product.updateMany({
+    where: { id, projectId: appUser.projectId },
     data: {
       supplierId: supplier.id,
       supplierName: parsed.data.supplierName,
@@ -196,6 +198,7 @@ export async function updateProduct(
   for (const extraSupplierName of extraSupplierNames) {
     const existing = await prisma.product.findFirst({
       where: {
+        projectId: appUser.projectId,
         itemName: parsed.data.itemName,
         supplierName: extraSupplierName
       }
@@ -203,13 +206,14 @@ export async function updateProduct(
     if (existing) continue;
 
     const extraSupplier = await prisma.supplier.upsert({
-      where: { name: extraSupplierName },
+      where: { projectId_name: { projectId: appUser.projectId, name: extraSupplierName } },
       update: {},
-      create: { name: extraSupplierName }
+      create: { projectId: appUser.projectId, name: extraSupplierName }
     });
 
     await prisma.product.create({
       data: {
+        projectId: appUser.projectId,
         supplierId: extraSupplier.id,
         supplierName: extraSupplierName,
         brandId: brand.id,
@@ -243,7 +247,7 @@ export async function updateProduct(
 }
 
 export async function createSupplier(prevState: { message?: string }, formData: FormData) {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
   const parsed = supplierSchema.safeParse({
     name: formData.get("name")
   });
@@ -253,9 +257,9 @@ export async function createSupplier(prevState: { message?: string }, formData: 
   }
 
   await prisma.supplier.upsert({
-    where: { name: parsed.data.name.trim() },
+    where: { projectId_name: { projectId: appUser.projectId, name: parsed.data.name.trim() } },
     update: {},
-    create: { name: parsed.data.name.trim() }
+    create: { projectId: appUser.projectId, name: parsed.data.name.trim() }
   });
 
   revalidatePath("/products");
@@ -264,28 +268,30 @@ export async function createSupplier(prevState: { message?: string }, formData: 
 }
 
 export async function deleteSupplier(formData: FormData) {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
   const id = String(formData.get("id") ?? "");
   if (!id) return;
 
-  const hasProducts = await prisma.product.count({ where: { supplierId: id } });
+  const hasProducts = await prisma.product.count({ where: { supplierId: id, projectId: appUser.projectId } });
   if (hasProducts > 0) return;
 
-  await prisma.supplier.delete({ where: { id } });
+  await prisma.supplier.deleteMany({ where: { id, projectId: appUser.projectId } });
   revalidatePath("/products");
   revalidatePath("/products/suppliers");
 }
 
 export async function deleteProduct(formData: FormData) {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
   const id = String(formData.get("id") ?? "");
   if (!id) return;
 
-  await prisma.orderNeed.deleteMany({ where: { productId: id } });
-  await prisma.stockMovement.deleteMany({ where: { productId: id } });
-  await prisma.inventoryCheck.deleteMany({ where: { productId: id } });
-  await prisma.orderSuggestion.deleteMany({ where: { productId: id } });
-  await prisma.product.delete({ where: { id } });
+  const product = await prisma.product.findFirst({ where: { id, projectId: appUser.projectId }, select: { id: true } });
+  if (!product) return;
+  await prisma.orderNeed.deleteMany({ where: { productId: product.id } });
+  await prisma.stockMovement.deleteMany({ where: { productId: product.id } });
+  await prisma.inventoryCheck.deleteMany({ where: { productId: product.id } });
+  await prisma.orderSuggestion.deleteMany({ where: { productId: product.id } });
+  await prisma.product.delete({ where: { id: product.id } });
 
   revalidatePath("/products");
   revalidatePath("/order-needs");
@@ -294,15 +300,17 @@ export async function deleteProduct(formData: FormData) {
 }
 
 export async function deleteProductInline(formData: FormData) {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
   const id = String(formData.get("id") ?? "");
   if (!id) return;
 
-  await prisma.orderNeed.deleteMany({ where: { productId: id } });
-  await prisma.stockMovement.deleteMany({ where: { productId: id } });
-  await prisma.inventoryCheck.deleteMany({ where: { productId: id } });
-  await prisma.orderSuggestion.deleteMany({ where: { productId: id } });
-  await prisma.product.delete({ where: { id } });
+  const product = await prisma.product.findFirst({ where: { id, projectId: appUser.projectId }, select: { id: true } });
+  if (!product) return;
+  await prisma.orderNeed.deleteMany({ where: { productId: product.id } });
+  await prisma.stockMovement.deleteMany({ where: { productId: product.id } });
+  await prisma.inventoryCheck.deleteMany({ where: { productId: product.id } });
+  await prisma.orderSuggestion.deleteMany({ where: { productId: product.id } });
+  await prisma.product.delete({ where: { id: product.id } });
 
   revalidatePath("/products");
   revalidatePath("/order-needs");

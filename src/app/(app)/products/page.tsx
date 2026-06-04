@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import ProductsList from "@/components/products-list";
+import { requireUser } from "@/lib/auth";
 
 const PAGE_SIZE = 20;
 
@@ -24,6 +25,7 @@ export default async function ProductsPage({
   const optional = getParam(searchParams, "optional");
   const orderDay = getParam(searchParams, "orderDay");
   const page = Number(getParam(searchParams, "page") || "1");
+  const { appUser } = await requireUser();
 
   const where = {
     AND: [
@@ -42,7 +44,8 @@ export default async function ProductsPage({
       status ? { status: status as never } : {},
       optional ? { optionalNote: optional as never } : {},
       orderDay ? { orderDay: orderDay as never } : {},
-      { isActive: true }
+      { isActive: true },
+      { projectId: appUser.projectId }
     ]
   };
 
@@ -62,8 +65,8 @@ export default async function ProductsPage({
         status: true
       }
     }),
-    prisma.product.findMany({ distinct: ["brandLabel"], select: { brandLabel: true } }),
-    prisma.product.findMany({ distinct: ["supplierName"], select: { supplierName: true } })
+    prisma.product.findMany({ where: { projectId: appUser.projectId }, distinct: ["brandLabel"], select: { brandLabel: true } }),
+    prisma.product.findMany({ where: { projectId: appUser.projectId }, distinct: ["supplierName"], select: { supplierName: true } })
   ]);
 
   const groupedMap = new Map<

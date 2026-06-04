@@ -2,14 +2,16 @@ import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { FormFeedback } from "@/components/form-feedback";
 import { createOrderNeed } from "@/app/actions/order-needs";
+import { requireUser } from "@/lib/auth";
 
 export default async function ProductDetailPage({ params }: { params: { id: string } }) {
+  const { appUser } = await requireUser();
   const [product, settings] = await Promise.all([
-    prisma.product.findUnique({
-      where: { id: params.id },
+    prisma.product.findFirst({
+      where: { id: params.id, projectId: appUser.projectId },
       include: { stockMovements: { orderBy: { createdAt: "desc" }, take: 10 } }
     }),
-    prisma.appSetting.findUnique({ where: { id: 1 } })
+    prisma.appSetting.findUnique({ where: { projectId: appUser.projectId } })
   ]);
 
   if (!product) {

@@ -1,22 +1,25 @@
 import { PrismaClient, StorageType, ProductStatus, OptionalType, Weekday } from "@prisma/client";
 
 const prisma = new PrismaClient();
+const LEGACY_PROJECT_CODE = "WRAPNBOWL";
 
 async function main() {
+  const project = await prisma.project.findUniqueOrThrow({ where: { code: LEGACY_PROJECT_CODE } });
   const supplier = await prisma.supplier.upsert({
-    where: { name: "Mediterranean Supplies" },
+    where: { projectId_name: { projectId: project.id, name: "Mediterranean Supplies" } },
     update: {},
-    create: { name: "Mediterranean Supplies" }
+    create: { projectId: project.id, name: "Mediterranean Supplies" }
   });
 
   const brand = await prisma.brand.upsert({
-    where: { name: "LEB+NOM" },
+    where: { projectId_name: { projectId: project.id, name: "LEB+NOM" } },
     update: {},
-    create: { name: "LEB+NOM" }
+    create: { projectId: project.id, name: "LEB+NOM" }
   });
 
   await prisma.product.create({
     data: {
+      projectId: project.id,
       supplierId: supplier.id,
       supplierName: supplier.name,
       brandId: brand.id,

@@ -7,7 +7,7 @@ import { prisma } from "@/lib/db";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export async function createUser(prevState: { message?: string }, formData: FormData) {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
 
   const email = String(formData.get("email") ?? "").trim();
   const role = String(formData.get("role") ?? "STAFF").toUpperCase();
@@ -31,10 +31,15 @@ export async function createUser(prevState: { message?: string }, formData: Form
   if (data.user) {
     await prisma.user.upsert({
       where: { email },
-      update: { role: role === "ADMIN" ? "ADMIN" : "STAFF", isActive: true },
       create: {
         id: data.user.id,
         email,
+        projectId: appUser.projectId,
+        role: role === "ADMIN" ? "ADMIN" : "STAFF",
+        isActive: true
+      },
+      update: {
+        projectId: appUser.projectId,
         role: role === "ADMIN" ? "ADMIN" : "STAFF",
         isActive: true
       }
@@ -46,15 +51,15 @@ export async function createUser(prevState: { message?: string }, formData: Form
 }
 
 export async function toggleUserActive(formData: FormData) {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
 
   const userId = String(formData.get("userId") ?? "");
   const isActive = String(formData.get("isActive") ?? "false") === "true";
 
   if (!userId) return;
 
-  await prisma.user.update({
-    where: { id: userId },
+  await prisma.user.updateMany({
+    where: { id: userId, projectId: appUser.projectId },
     data: { isActive: !isActive }
   });
 
@@ -62,13 +67,15 @@ export async function toggleUserActive(formData: FormData) {
 }
 
 export async function blockUser(formData: FormData) {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
 
   const userId = String(formData.get("userId") ?? "");
   if (!userId) return;
 
-  await prisma.user.update({
-    where: { id: userId },
+  if (userId === appUser.id) return;
+
+  await prisma.user.updateMany({
+    where: { id: userId, projectId: appUser.projectId },
     data: { isActive: false }
   });
 
@@ -83,7 +90,9 @@ export async function removeUser(formData: FormData) {
   if (userId === appUser.id) redirect("/users?error=You+cannot+remove+your+own+account");
 
   try {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const user = await prisma.user.findFirst({
+      where: { id: userId, projectId: appUser.projectId }
+    });
     if (!user) redirect("/users?error=User+not+found");
 
     await prisma.$transaction([
@@ -117,13 +126,13 @@ export async function removeUser(formData: FormData) {
 }
 
 export async function approveUser(formData: FormData) {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
 
   const userId = String(formData.get("userId") ?? "");
   if (!userId) return;
 
-  await prisma.user.update({
-    where: { id: userId },
+  await prisma.user.updateMany({
+    where: { id: userId, projectId: appUser.projectId },
     data: { isActive: true }
   });
 
@@ -131,14 +140,14 @@ export async function approveUser(formData: FormData) {
 }
 
 export async function updateUserRole(formData: FormData) {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
 
   const userId = String(formData.get("userId") ?? "");
   const role = String(formData.get("role") ?? "STAFF").toUpperCase();
   if (!userId) return;
 
-  await prisma.user.update({
-    where: { id: userId },
+  await prisma.user.updateMany({
+    where: { id: userId, projectId: appUser.projectId },
     data: { role: role === "ADMIN" ? "ADMIN" : "STAFF" }
   });
 

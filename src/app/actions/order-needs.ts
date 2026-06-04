@@ -22,9 +22,9 @@ const qtySchema = z.object({
   neededQty: z.coerce.number().int().min(0)
 });
 
-async function getLinkedProductsByProductId(productId: string) {
-  const product = await prisma.product.findUnique({
-    where: { id: productId },
+async function getLinkedProductsByProductId(productId: string, projectId: string) {
+  const product = await prisma.product.findFirst({
+    where: { id: productId, projectId },
     select: { itemName: true }
   });
   if (!product) return [];
@@ -32,6 +32,7 @@ async function getLinkedProductsByProductId(productId: string) {
   return prisma.product.findMany({
     where: {
       isActive: true,
+      projectId,
       itemName: product.itemName
     },
     select: { id: true }
@@ -52,7 +53,7 @@ export async function createOrderNeed(prevState: { message?: string }, formData:
   }
 
   const weekStart = getWeekStart();
-  const linkedProducts = await getLinkedProductsByProductId(parsed.data.productId);
+  const linkedProducts = await getLinkedProductsByProductId(parsed.data.productId, appUser.projectId);
 
   for (const linked of linkedProducts) {
     const existing = await prisma.orderNeed.findFirst({
@@ -96,7 +97,7 @@ export async function incrementOrderNeed(formData: FormData) {
   if (!parsed.success) return;
 
   const weekStart = getWeekStart();
-  const linkedProducts = await getLinkedProductsByProductId(parsed.data.productId);
+  const linkedProducts = await getLinkedProductsByProductId(parsed.data.productId, appUser.projectId);
 
   for (const linked of linkedProducts) {
     const existing = await prisma.orderNeed.findFirst({
@@ -134,7 +135,7 @@ export async function setOrderNeedQty(formData: FormData) {
   if (!parsed.success) return;
 
   const weekStart = getWeekStart();
-  const linkedProducts = await getLinkedProductsByProductId(parsed.data.productId);
+  const linkedProducts = await getLinkedProductsByProductId(parsed.data.productId, appUser.projectId);
 
   for (const linked of linkedProducts) {
     const existing = await prisma.orderNeed.findFirst({
@@ -168,14 +169,14 @@ export async function setOrderNeedQty(formData: FormData) {
 }
 
 export async function removeOrderNeed(formData: FormData) {
-  await requireUser();
+  const { appUser } = await requireUser();
   const parsed = idSchema.safeParse({
     productId: formData.get("productId")
   });
   if (!parsed.success) return;
 
   const weekStart = getWeekStart();
-  const linkedProducts = await getLinkedProductsByProductId(parsed.data.productId);
+  const linkedProducts = await getLinkedProductsByProductId(parsed.data.productId, appUser.projectId);
 
   await prisma.orderNeed.deleteMany({
     where: {
@@ -190,12 +191,12 @@ export async function removeOrderNeed(formData: FormData) {
 }
 
 export async function markOrderNeedDone(formData: FormData) {
-  await requireUser();
+  const { appUser } = await requireUser();
   const id = String(formData.get("id") ?? "");
   if (!id) return;
 
-  const current = await prisma.orderNeed.findUnique({
-    where: { id },
+  const current = await prisma.orderNeed.findFirst({
+    where: { id, product: { projectId: appUser.projectId } },
     include: { product: { select: { itemName: true } } }
   });
   if (!current) return;
@@ -203,7 +204,7 @@ export async function markOrderNeedDone(formData: FormData) {
   await prisma.orderNeed.deleteMany({
     where: {
       weekStart: current.weekStart,
-      product: { itemName: current.product.itemName }
+      product: { itemName: current.product.itemName, projectId: appUser.projectId }
     }
   });
 
@@ -213,7 +214,7 @@ export async function markOrderNeedDone(formData: FormData) {
 }
 
 export async function markSupplierDone(formData: FormData) {
-  await requireUser();
+  const { appUser } = await requireUser();
   const supplierName = String(formData.get("supplier") ?? "");
   if (!supplierName) return;
 
@@ -221,7 +222,7 @@ export async function markSupplierDone(formData: FormData) {
   await prisma.orderNeed.deleteMany({
     where: {
       weekStart,
-      product: { supplierName }
+      product: { supplierName, projectId: appUser.projectId }
     }
   });
 
@@ -253,7 +254,7 @@ export async function prepareJjCart(formData: FormData) {
     where: {
       weekStart,
       done: false,
-      product: { supplierName: supplierName }
+      product: { supplierName: supplierName, projectId: appUser.projectId }
     },
     include: { product: true },
     orderBy: { createdAt: "desc" }

@@ -1,15 +1,10 @@
 import { NextResponse } from "next/server";
 import { getOrderSuggestions, getTodayWeekday } from "@/lib/order-utils";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/auth";
 
 export async function GET() {
-  const supabase = createSupabaseServerClient();
-  const { data } = await supabase.auth.getUser();
-  if (!data.user) {
-    return NextResponse.redirect(new URL("/sign-in", process.env.NEXT_PUBLIC_SITE_URL));
-  }
-
-  const suggestions = await getOrderSuggestions(getTodayWeekday());
+  const { appUser } = await requireUser();
+  const suggestions = await getOrderSuggestions(appUser.projectId, getTodayWeekday());
   const lines = ["Supplier,Brand,Item,SuggestedQty,Unit"];
 
   for (const item of suggestions) {

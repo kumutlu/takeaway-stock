@@ -4,6 +4,7 @@ import xlsx from "xlsx";
 import { PrismaClient, StorageType, ProductStatus, OptionalType, Weekday } from "@prisma/client";
 
 const prisma = new PrismaClient();
+const LEGACY_PROJECT_CODE = "WRAPNBOWL";
 
 const DEFAULT_FILE = "/Users/kemal/Downloads/Wrapn BowlStock list 2026.xlsx";
 
@@ -87,6 +88,7 @@ function buildProductId(supplierIdRaw: string, itemName: string) {
 }
 
 async function main() {
+  const project = await prisma.project.findUniqueOrThrow({ where: { code: LEGACY_PROJECT_CODE } });
   const filePath = process.argv[2] ? path.resolve(process.argv[2]) : DEFAULT_FILE;
 
   if (!fs.existsSync(filePath)) {
@@ -124,15 +126,15 @@ async function main() {
     }
 
     const supplier = await prisma.supplier.upsert({
-      where: { name: supplierName },
+      where: { projectId_name: { projectId: project.id, name: supplierName } },
       update: {},
-      create: { name: supplierName }
+      create: { projectId: project.id, name: supplierName }
     });
 
     const brand = await prisma.brand.upsert({
-      where: { name: brandLabel },
+      where: { projectId_name: { projectId: project.id, name: brandLabel } },
       update: {},
-      create: { name: brandLabel }
+      create: { projectId: project.id, name: brandLabel }
     });
 
     const productId = buildProductId(supplierIdRaw, itemName);
@@ -157,6 +159,7 @@ async function main() {
       },
       create: {
         id: productId,
+        projectId: project.id,
         supplierId: supplier.id,
         supplierName,
         brandId: brand.id,

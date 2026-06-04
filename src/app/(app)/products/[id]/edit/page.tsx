@@ -5,11 +5,12 @@ import ProductForm from "@/components/product-form";
 import { deleteProduct, updateProduct } from "../../actions";
 
 export default async function EditProductPage({ params }: { params: { id: string } }) {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
 
   const [product, suppliers] = await Promise.all([
-    prisma.product.findUnique({ where: { id: params.id } }),
+    prisma.product.findFirst({ where: { id: params.id, projectId: appUser.projectId } }),
     prisma.supplier.findMany({
+      where: { projectId: appUser.projectId },
       orderBy: { name: "asc" },
       select: { name: true }
     })
@@ -18,6 +19,7 @@ export default async function EditProductPage({ params }: { params: { id: string
 
   const relatedProducts = await prisma.product.findMany({
     where: {
+      projectId: appUser.projectId,
       itemName: product.itemName,
       brandLabel: product.brandLabel,
       unit: product.unit

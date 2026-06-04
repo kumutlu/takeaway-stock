@@ -9,7 +9,10 @@ export default async function UsersPage({
   searchParams: Record<string, string | string[] | undefined>;
 }) {
   const { appUser } = await requireAdmin();
-  const users = await prisma.user.findMany({ orderBy: { createdAt: "desc" } });
+  const users = await prisma.user.findMany({
+    where: { projectId: appUser.projectId },
+    orderBy: { createdAt: "desc" }
+  });
 
   return (
     <section className="space-y-6">
@@ -26,7 +29,9 @@ export default async function UsersPage({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-ink-900">Users</h1>
-          <p className="text-sm text-ink-500">Admin only · approve and manage access.</p>
+          <p className="text-sm text-ink-500">
+            Admin only · approve and manage access to {appUser.project.name}.
+          </p>
         </div>
       </div>
 

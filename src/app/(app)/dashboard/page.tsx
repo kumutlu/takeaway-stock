@@ -3,28 +3,31 @@ import { prisma } from "@/lib/db";
 import { getOrderNeedsForWeek, getTodayWeekday, getWeekStart } from "@/lib/order-utils";
 import PushOptIn from "@/components/push-optin";
 import { getVapidPublicKey } from "@/lib/push";
+import { requireUser } from "@/lib/auth";
 
 const NEEDS_WINDOW = new Set(["SUNDAY", "MONDAY", "TUESDAY"]);
 
 export default async function DashboardPage() {
+  const { appUser } = await requireUser();
+  const projectId = appUser.projectId;
   const today = getTodayWeekday();
   const weekStart = getWeekStart();
 
   const [totalProducts, brandCountsRaw, storageCountsRaw, products, needs] =
     await Promise.all([
-      prisma.product.count({ where: { isActive: true } }),
+      prisma.product.count({ where: { isActive: true, projectId } }),
       prisma.product.groupBy({
         by: ["brandLabel"],
         _count: { brandLabel: true },
-        where: { isActive: true }
+        where: { isActive: true, projectId }
       }),
       prisma.product.groupBy({
         by: ["storage"],
         _count: { storage: true },
-        where: { isActive: true }
+        where: { isActive: true, projectId }
       }),
       prisma.product.findMany({
-        where: { isActive: true },
+        where: { isActive: true, projectId },
         select: {
           currentStock: true,
           parLevel: true,
@@ -33,7 +36,7 @@ export default async function DashboardPage() {
           supplierName: true
         }
       }),
-      getOrderNeedsForWeek(weekStart)
+      getOrderNeedsForWeek(projectId, weekStart)
     ]);
 
   const checksToday = products.filter((product) => product.inventoryCheckDay === today);

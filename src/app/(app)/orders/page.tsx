@@ -14,7 +14,7 @@ function groupBySupplier(items: Array<{ id: string; product: { supplierName: str
 export default async function OrdersPage() {
   const { appUser } = await requireUser();
   const weekStart = getWeekStart();
-  const needs = await getOrderNeedsForWeek(weekStart);
+  const needs = await getOrderNeedsForWeek(appUser.projectId, weekStart);
   const grouped = groupBySupplier(needs);
   const allText = Object.entries(grouped)
     .map(([supplier, items]) => {

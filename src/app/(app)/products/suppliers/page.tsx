@@ -5,9 +5,10 @@ import { FormFeedback } from "@/components/form-feedback";
 import { createSupplier, deleteSupplier } from "../actions";
 
 export default async function SuppliersPage() {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
 
   const suppliers = await prisma.supplier.findMany({
+    where: { projectId: appUser.projectId },
     orderBy: { name: "asc" },
     include: {
       _count: {

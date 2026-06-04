@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { signUpWithPassword } from "../login/actions";
+import ProjectRegistrationFields from "@/components/project-registration-fields";
 
 export default function SignUpPage({
   searchParams
@@ -13,7 +14,9 @@ export default function SignUpPage({
     <main className="flex min-h-screen items-center justify-center px-6 py-10">
       <div className="w-full max-w-md rounded-3xl border border-ink-100 bg-white/95 p-8 shadow-card">
         <h1 className="text-3xl font-semibold text-ink-900">Create account</h1>
-        <p className="mt-2 text-sm text-ink-500">Set up your account to start tracking stock.</p>
+        <p className="mt-2 text-sm text-ink-500">
+          Join your team with a project number, or create a new project.
+        </p>
 
         {error && (
           <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-xs text-rose-600">
@@ -27,6 +30,7 @@ export default function SignUpPage({
         )}
 
         <form action={signUpWithPassword} className="mt-6 space-y-4">
+          <ProjectRegistrationFields />
           <input
             className="ui-input py-3"
             placeholder="Email"

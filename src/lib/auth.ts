@@ -14,16 +14,12 @@ export async function requireUser() {
     redirect("/sign-in");
   }
 
-  let user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({
+    where: { email },
+    include: { project: true }
+  });
   if (!user) {
-    user = await prisma.user.create({
-      data: {
-        id: data.user.id,
-        email,
-        role: "STAFF",
-        isActive: false
-      }
-    });
+    redirect("/join-project");
   }
 
   if (!user.isActive) {

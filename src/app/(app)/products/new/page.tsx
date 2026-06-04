@@ -4,8 +4,9 @@ import ProductForm from "@/components/product-form";
 import { createProduct } from "../actions";
 
 export default async function NewProductPage() {
-  await requireAdmin();
+  const { appUser } = await requireAdmin();
   const suppliers = await prisma.supplier.findMany({
+    where: { projectId: appUser.projectId },
     orderBy: { name: "asc" },
     select: { name: true }
   });

@@ -48,40 +48,69 @@ enum MovementType {
   WASTE
 }
 
+model Project {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users       User[]
+  suppliers   Supplier[]
+  brands      Brand[]
+  products    Product[]
+  appSetting  AppSetting?
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
+  projectId String
   role      UserRole @default(STAFF)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  project        Project @relation(fields: [projectId], references: [id])
   stockMovements StockMovement[]
   orderNeeds     OrderNeed[]
   pushSubscriptions PushSubscription[]
   auditLogs AuditLog[]
+
+  @@index([projectId])
 }
 
 model Supplier {
   id        String   @id @default(uuid())
-  name      String   @unique
+  projectId String
+  name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  project  Project   @relation(fields: [projectId], references: [id])
   products Product[]
+
+  @@unique([projectId, name])
+  @@index([projectId])
 }
 
 model Brand {
   id        String   @id @default(uuid())
-  name      String   @unique
+  projectId String
+  name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  project  Project   @relation(fields: [projectId], references: [id])
   products Product[]
+
+  @@unique([projectId, name])
+  @@index([projectId])
 }
 
 model Product {
   id                 String         @id @default(uuid())
+  projectId          String
   supplierId         String
   brandId            String?
   supplierName       String
@@ -104,6 +133,7 @@ model Product {
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
 
+  project            Project        @relation(fields: [projectId], references: [id])
   supplier           Supplier       @relation(fields: [supplierId], references: [id])
   brand              Brand?         @relation(fields: [brandId], references: [id])
   stockMovements     StockMovement[]
@@ -111,6 +141,7 @@ model Product {
   inventoryChecks    InventoryCheck[]
   orderSuggestions   OrderSuggestion[]
 
+  @@index([projectId])
   @@index([supplierId])
   @@index([brandId])
   @@index([itemName])
@@ -194,11 +225,14 @@ model AuditLog {
 }
 
 model AppSetting {
-  id                 Int      @id @default(1)
+  id                 Int      @id @default(autoincrement())
+  projectId          String   @unique
   lowStockThreshold  String   @default("PAR_LEVEL")
   criticalPercent    Int      @default(50)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+
+  project            Project  @relation(fields: [projectId], references: [id])
 }
 
 model PushSubscription {

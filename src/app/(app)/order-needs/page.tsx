@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { getWeekStart } from "@/lib/order-utils";
 import OrderNeedsList from "@/components/order-needs-list";
+import { requireUser } from "@/lib/auth";
 
 function getParam(searchParams: Record<string, string | string[] | undefined>, key: string) {
   const value = searchParams[key];
@@ -14,18 +15,21 @@ export default async function OrderNeedsPage({
   searchParams: Record<string, string | string[] | undefined>;
 }) {
   const supplierFilter = getParam(searchParams, "supplier");
+  const { appUser } = await requireUser();
+  const projectId = appUser.projectId;
   const weekStart = getWeekStart();
 
   const [products, needs, suppliers] = await Promise.all([
     prisma.product.findMany({
       where: {
         isActive: true,
+        projectId,
         ...(supplierFilter ? { supplierName: supplierFilter } : {})
       },
       orderBy: [{ supplierName: "asc" }, { itemName: "asc" }]
     }),
-    prisma.orderNeed.findMany({ where: { weekStart, done: false } }),
-    prisma.product.findMany({ distinct: ["supplierName"], select: { supplierName: true } })
+    prisma.orderNeed.findMany({ where: { weekStart, done: false, product: { projectId } } }),
+    prisma.product.findMany({ where: { projectId }, distinct: ["supplierName"], select: { supplierName: true } })
   ]);
 
   const needMap = new Map(needs.map((need) => [need.productId, need]));

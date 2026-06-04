@@ -9,6 +9,7 @@ const NEEDS_WINDOW = new Set(["SUNDAY", "MONDAY", "TUESDAY"]);
 export async function POST(request: Request) {
   const cronSecret = process.env.CRON_SECRET;
   const headerSecret = request.headers.get("x-cron-secret");
+  let requestedProjectId: string | undefined;
 
   if (!cronSecret || headerSecret !== cronSecret) {
     const supabase = createSupabaseServerClient();
@@ -16,6 +17,14 @@ export async function POST(request: Request) {
     if (!data.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const appUser = await prisma.user.findFirst({
+      where: { id: data.user.id, isActive: true },
+      select: { projectId: true }
+    });
+    if (!appUser) {
+      return NextResponse.json({ error: "Project access required" }, { status: 403 });
+    }
+    requestedProjectId = appUser.projectId;
   }
 
   const today = getTodayWeekday();
@@ -24,15 +33,24 @@ export async function POST(request: Request) {
   }
 
   const weekStart = getWeekStart();
-  const pendingNeeds = await prisma.orderNeed.count({
-    where: { weekStart, done: false }
+  const subscriptions = await prisma.pushSubscription.findMany({
+    where: {
+      user: {
+        isActive: true,
+        ...(requestedProjectId ? { projectId: requestedProjectId } : {}),
+        project: {
+          products: {
+            some: {
+              orderNeeds: { some: { weekStart, done: false } }
+            }
+          }
+        }
+      }
+    }
   });
-
-  if (pendingNeeds === 0) {
+  if (subscriptions.length === 0) {
     return NextResponse.json({ ok: true, skipped: true });
   }
-
-  const subscriptions = await prisma.pushSubscription.findMany();
   const payload = {
     title: "Order needs pending",
     body: "Please log required quantities by Tuesday.",
